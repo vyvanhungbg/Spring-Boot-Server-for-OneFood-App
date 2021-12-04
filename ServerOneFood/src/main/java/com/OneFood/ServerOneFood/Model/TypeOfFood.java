@@ -19,16 +19,16 @@ public class TypeOfFood {
 
     @OneToMany(targetEntity = Food.class)
     @JoinColumn(name = "idTypeOfFood", referencedColumnName = "idTypeOfFood")
-    private List<Food> foodList;
+    private List<Food> foods;
 
     public TypeOfFood() {
     }
 
-    public TypeOfFood( String typeOfFoodName, String TypeOfFoodImage, List<Food> foodList) {
+    public TypeOfFood( String typeOfFoodName, String TypeOfFoodImage, List<Food> foods) {
 
         this.typeOfFoodName = typeOfFoodName;
         this.typeOfFoodImage = TypeOfFoodImage;
-        this.foodList = foodList;
+        this.foods = foods;
     }
 
     public long getIdTypeOfFood() {
@@ -55,11 +55,11 @@ public class TypeOfFood {
         this.typeOfFoodImage = typeOfFoodImage;
     }
 
-    public List<Food> getFoodList() {
-        return foodList;
+    public List<Food> getFoods() {
+        return foods;
     }
 
-    public void setFoodList(List<Food> foodList) {
-        this.foodList = foodList;
+    public void setFoods(List<Food> foods) {
+        this.foods = foods;
     }
 }

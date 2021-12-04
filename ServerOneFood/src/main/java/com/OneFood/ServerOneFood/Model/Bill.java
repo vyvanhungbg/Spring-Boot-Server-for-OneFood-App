@@ -37,6 +37,9 @@ public class Bill {
    @JoinColumn(name = "idBill", referencedColumnName = "idBill")
    private List<OrderFoodDetails> orderFoodDetails;
 
+   public Bill() {
+   }
+
    public Bill(long idUser, long idStore, long idLocationOfUser, String billDiscountAmountFromDiscountCode, String billDiscountAmountFromCodeFreeShip, String billMoneyOfShip, String billTotalMoney, String billMoneyToBePaid, String billPayMethod, int billStatus, String billTimeOrder, String billTimeConfirm, String billTimeDone, String billTimeDestroy, String billNote, List<OrderFoodDetails> orderFoodDetails) {
       this.idUser = idUser;
       this.idStore = idStore;
@@ -54,17 +57,6 @@ public class Bill {
       this.billTimeDestroy = billTimeDestroy;
       this.billNote = billNote;
       this.orderFoodDetails = orderFoodDetails;
-   }
-
-   public List<OrderFoodDetails> getOrderFoodDetails() {
-      return orderFoodDetails;
-   }
-
-   public void setOrderFoodDetails(List<OrderFoodDetails> orderFoodDetails) {
-      this.orderFoodDetails = orderFoodDetails;
-   }
-
-   public Bill() {
    }
 
    public long getIdBill() {
@@ -193,5 +185,13 @@ public class Bill {
 
    public void setBillNote(String billNote) {
       this.billNote = billNote;
+   }
+
+   public List<OrderFoodDetails> getOrderFoodDetails() {
+      return orderFoodDetails;
+   }
+
+   public void setOrderFoodDetails(List<OrderFoodDetails> orderFoodDetails) {
+      this.orderFoodDetails = orderFoodDetails;
    }
 }

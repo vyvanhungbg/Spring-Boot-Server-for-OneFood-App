@@ -44,7 +44,7 @@ public class TypeOfFoodService {
         if(typeOfFood==null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject(false,"Cannot find type of food with id "+id,null));
         typeOfFood.setTypeOfFoodName(newTypeOfFood.getTypeOfFoodName());
-        typeOfFood.setFoodList(newTypeOfFood.getFoodList());
+        typeOfFood.setFoods(newTypeOfFood.getFoods());
         typeOfFood.setTypeOfFoodImage(newTypeOfFood.getTypeOfFoodImage());
 
         TypeOfFood updatedTypeOfFood = typeOfFoodRepository.save(typeOfFood);

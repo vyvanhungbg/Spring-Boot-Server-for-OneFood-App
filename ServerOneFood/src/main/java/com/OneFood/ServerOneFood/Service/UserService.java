@@ -1,5 +1,6 @@
 package com.OneFood.ServerOneFood.Service;
 
+import com.OneFood.ServerOneFood.Model.CustomUserDetails;
 import com.OneFood.ServerOneFood.Model.ResponseObject;
 import com.OneFood.ServerOneFood.Model.TypeOfFood;
 import com.OneFood.ServerOneFood.Model.User;
@@ -7,6 +8,10 @@ import com.OneFood.ServerOneFood.Reponsitory.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.Access;
@@ -14,9 +19,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     @Autowired
     private final UserRepository userRepository;
+
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -31,6 +37,7 @@ public class UserService {
     }
 
     public ResponseEntity<ResponseObject> addNewUser(User newUser){
+
         User user = userRepository.save(newUser);
         if(user == null)
             return ResponseEntity.status(HttpStatus.FAILED_DEPENDENCY).body(new ResponseObject(false,"New User create failed ",user));
@@ -70,5 +77,14 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject(false,"Cannot find account with id "+id,null));
         userRepository.delete(user);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Delete successful account with id "+id,user));
+    }
+
+    @Override
+    public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUserName(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(username.toString());
+        }
+        return new CustomUserDetails(user);
     }
 }

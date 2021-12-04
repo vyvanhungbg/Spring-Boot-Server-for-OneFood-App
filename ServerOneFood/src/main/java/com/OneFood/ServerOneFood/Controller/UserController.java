@@ -6,6 +6,7 @@ import com.OneFood.ServerOneFood.Model.User;
 import com.OneFood.ServerOneFood.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     @Autowired
     private final UserService userService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -25,6 +28,7 @@ public class UserController {
     }
     @PostMapping("")
     ResponseEntity<ResponseObject> addNewTypeOfDiscount(@RequestBody User user){
+        user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
         return userService.addNewUser(user);
     }
 

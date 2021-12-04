@@ -9,16 +9,20 @@ import java.util.List;
 @Entity
 @Table
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idUser;
+    @Column(unique = true,nullable = false)
     private String userName;
     private String userPassword;
     private String userImage;
     private String userDateOfBirth;
     private String userSex;
     private String userMoney;
+    @Column(unique = true,nullable = false)
     private String userNumberPhone;
+    @Column(unique = true,nullable = false)
     private String userEmail;
 
     @OneToMany(targetEntity = Cart.class)
