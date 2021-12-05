@@ -1,10 +1,14 @@
 package com.OneFood.ServerOneFood.Model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table
@@ -24,6 +28,7 @@ public class User {
     private String userNumberPhone;
     @Column(unique = true,nullable = false)
     private String userEmail;
+    private boolean enable;
 
     @OneToMany(targetEntity = Cart.class)
     @JoinColumn(name = "idUser", referencedColumnName = "idUser")
@@ -44,6 +49,17 @@ public class User {
     @OneToMany(targetEntity = Bill.class)
     @JoinColumn(name = "idUser", referencedColumnName = "idUser")
     private List<Bill> bills;
+
+
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
+
     public User() {
     }
 
@@ -61,6 +77,26 @@ public class User {
         this.locationOfUsers = locationOfUsers;
         this.notifications = notifications;
         this.bills = bills;
+    }
+
+    public void addRole(Role role) {
+        roles.add(role);
+        role.getUsers().add(this);
+    }
+
+    public void removeRole(Role role) {
+        roles.remove(role);
+        role.getUsers().remove(this);
+    }
+
+
+    @JsonBackReference
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public List<Notification> getNotifications() {
@@ -141,6 +177,22 @@ public class User {
 
     public void setUserMoney(String userMoney) {
         this.userMoney = userMoney;
+    }
+
+    public List<Bill> getBills() {
+        return bills;
+    }
+
+    public void setBills(List<Bill> bills) {
+        this.bills = bills;
+    }
+
+    public boolean isEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
 
     public String getUserNumberPhone() {

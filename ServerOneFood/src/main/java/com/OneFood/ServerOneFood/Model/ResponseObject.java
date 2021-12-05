@@ -3,13 +3,13 @@ package com.OneFood.ServerOneFood.Model;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-public class ResponseObject {
+public class ResponseObject<T> {
     private boolean status;
     private String message;
-    private Object data;
+    private T data;
 
 
-    public ResponseObject(boolean status, String message, Object data) {
+    public ResponseObject(boolean status, String message, T data) {
         this.status = status;
         this.message = message;
         this.data = data;
@@ -33,11 +33,11 @@ public class ResponseObject {
         this.message = message;
     }
 
-    public Object getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 }

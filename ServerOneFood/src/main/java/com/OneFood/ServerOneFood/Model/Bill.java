@@ -12,7 +12,7 @@ public class Bill {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private long idBill;
-   private long idUser;
+   public long idUser;
    private long idStore;
 
    private long idLocationOfUser;
@@ -32,13 +32,15 @@ public class Bill {
    private String billTimeDestroy;
    private String billNote;
 
+
    @OneToMany(targetEntity = OrderFoodDetails.class)
-   @JsonIgnore
    @JoinColumn(name = "idBill", referencedColumnName = "idBill")
    private List<OrderFoodDetails> orderFoodDetails;
 
    public Bill() {
    }
+
+
 
    public Bill(long idUser, long idStore, long idLocationOfUser, String billDiscountAmountFromDiscountCode, String billDiscountAmountFromCodeFreeShip, String billMoneyOfShip, String billTotalMoney, String billMoneyToBePaid, String billPayMethod, int billStatus, String billTimeOrder, String billTimeConfirm, String billTimeDone, String billTimeDestroy, String billNote, List<OrderFoodDetails> orderFoodDetails) {
       this.idUser = idUser;
@@ -58,6 +60,10 @@ public class Bill {
       this.billNote = billNote;
       this.orderFoodDetails = orderFoodDetails;
    }
+
+
+
+
 
    public long getIdBill() {
       return idBill;

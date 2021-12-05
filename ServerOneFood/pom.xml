@@ -16,7 +16,6 @@
 	<description>Server for App OneFood</description>
 	<properties>
 		<java.version>11</java.version>
-		<jwt.secret_key>hung270619@</jwt.secret_key>
 	</properties>
 
 
@@ -57,6 +56,8 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+
+
 
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>

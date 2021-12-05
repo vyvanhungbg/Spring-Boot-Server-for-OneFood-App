@@ -1,13 +1,14 @@
 package com.OneFood.ServerOneFood.Controller;
 
 import com.OneFood.ServerOneFood.Model.ResponseObject;
-import com.OneFood.ServerOneFood.Model.TypeOfDiscountCode;
 import com.OneFood.ServerOneFood.Model.User;
 import com.OneFood.ServerOneFood.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -32,7 +33,10 @@ public class UserController {
         return userService.addNewUser(user);
     }
 
-
+  /*  @GetMapping("/{test}")
+    List<String> test(@PathVariable(value = "test") String test){
+        return userService.test(test);
+    }*/
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseObject> getUserById(@PathVariable Long id){

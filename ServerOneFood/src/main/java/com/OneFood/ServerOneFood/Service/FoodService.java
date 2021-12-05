@@ -1,5 +1,6 @@
 package com.OneFood.ServerOneFood.Service;
 
+import com.OneFood.ServerOneFood.DTO.FoodDTO;
 import com.OneFood.ServerOneFood.Exception.ErrorNotFoundException;
 import com.OneFood.ServerOneFood.Model.Food;
 import com.OneFood.ServerOneFood.Model.ResponseObject;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,16 +26,18 @@ public class FoodService {
 
     public ResponseEntity<ResponseObject> getAllFood(){
         List<Food> foods =  foodRepository.findAll();
+        List<FoodDTO> foodDTOs = new ArrayList<>();
+        foods.stream().forEach(food -> foodDTOs.add(new FoodDTO(food)));
         if(foods.isEmpty())
-            return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty food list ", foods));
-        return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Find all successful food ", foods));
+            return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty food list ", foodDTOs));
+        return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Find all successful food ", foodDTOs));
 
     }
 
     public ResponseEntity<ResponseObject> getFoodById(Long id) {
         Optional<Food> food = foodRepository.findById(id);
         if(food.isPresent())
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Successful search food with id "+id,food));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Successful search food with id "+id,new FoodDTO(food.get())));
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject(false,"Cannot find food with id "+id,null));
     }
@@ -42,7 +46,7 @@ public class FoodService {
         Food savedFood = foodRepository.save(food);
         if(savedFood == null)
             return  ResponseEntity.status(HttpStatus.FAILED_DEPENDENCY).body(new ResponseObject(false,"New  food save failed !", null));
-        return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"New  food save successful ! ", savedFood));
+        return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"New  food save successful ! ", new FoodDTO(savedFood)));
 
     }
 
@@ -55,7 +59,7 @@ public class FoodService {
         food.setFoodDescribe(newFood.getFoodDescribe());
         food.setFoodPrice(newFood.getFoodPrice());
         Food updatedFood = foodRepository.save(food);
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Update successful food with id "+id,updatedFood));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Update successful food with id "+id,new FoodDTO(updatedFood)));
 
     }
 
@@ -66,7 +70,7 @@ public class FoodService {
         if(food==null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject(false,"Cannot find food with id "+id,null));
         foodRepository.delete(food);
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Delete successful food with id "+id,food));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Delete successful food with id "+id,new FoodDTO(food)));
 
     }
 

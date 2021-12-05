@@ -50,17 +50,13 @@ public class LoginController {
 
        }catch (BadCredentialsException e){
            e.printStackTrace();
-           return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"Failed ", null));
+           return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"Incorrect account or password  ", null));
        }
 
         // Nếu không xảy ra exception tức là thông tin hợp lệ
         // Set thông tin authentication vào Security Context
-         }
+    }
 
-    // Api /api/random yêu cầu phải xác thực mới có thể request
-    /*@GetMapping("/random")
-    public RandomStuff randomStuff(){
-        return new RandomStuff("JWT Hợp lệ mới có thể thấy được message này");
-    }*/
+
 
 }

@@ -11,11 +11,11 @@ import java.util.logging.Logger;
 
 @Service
 public class JwtTokenProvider {
-    //@Value("${jwt.secret_key}")
-    private final String ;
+    @Value("${jwt.secret_key}")
+    private String JWT_SECRET;
 
-
-    private final long JWT_EXPIRATION = 604800000L;
+    @Value("${jwt.expiration}")
+    private long JWT_EXPIRATION ;
 
     // Tạo ra jwt từ thông tin user
     public String generateToken(CustomUserDetails userDetails) {
