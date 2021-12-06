@@ -1,9 +1,7 @@
 package com.OneFood.ServerOneFood.DTO;
 
-import com.OneFood.ServerOneFood.Model.*;
+import com.OneFood.ServerOneFood.model.*;
 
-import javax.persistence.*;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

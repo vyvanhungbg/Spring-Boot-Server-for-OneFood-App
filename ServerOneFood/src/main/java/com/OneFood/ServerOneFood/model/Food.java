@@ -1,39 +1,65 @@
-package com.OneFood.ServerOneFood.DTO;
+package com.OneFood.ServerOneFood.model;
 
-import com.OneFood.ServerOneFood.model.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.persistence.*;
 import java.util.List;
 
-public class FoodDTO {
+
+@Table(name = "food")
+@Entity
+public class Food {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idFood;
+   // @Column(name = "idStore",nullable = false)
     private long idStore;
+   // @Column(name = "idTypeOfFood",nullable = false)
     private long idTypeOfFood;
+   // @Column(nullable = false)
     private String foodName;
+   // @Column(nullable = false)
     private String foodImage;
+    //@Column(nullable = false)
     private String foodPrice;
+
     private String foodDescribe;
 
+
+
+    @OneToMany(targetEntity = FoodOption.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "idFood",referencedColumnName = "idFood") // cot idFood ở bảng Food Option sẽ tham chiếu tới idFood cửa bảng Food
     private List<FoodOption> foodOptions;
-    @JsonIgnore
+
+
+    @OneToMany(targetEntity = FoodDiscountCode.class)
+    @JoinColumn(name = "idFood", referencedColumnName = "idFood")
     private List<FoodDiscountCode> foodDiscountCodes;
-    @JsonIgnore
+
+    @OneToMany(targetEntity = Cart.class)
+    @JoinColumn(name = "idFood", referencedColumnName = "idFood")
+    private List<Cart> carts;
+
+    @OneToMany(targetEntity = FoodReviews.class)
+    @JoinColumn(name = "idFood", referencedColumnName = "idFood")
     private List<FoodReviews> foodReviews;
 
-    public FoodDTO(Food food) {
-        this.idFood = food.getIdFood();
-        this.idStore = food.getIdStore();
-        this.idTypeOfFood = food.getIdTypeOfFood();
-        this.foodName = food.getFoodName();
-        this.foodImage = food.getFoodImage();
-        this.foodPrice = food.getFoodPrice();
-        this.foodDescribe = food.getFoodDescribe();
-        this.foodOptions = food.getFoodOptions();
-        this.foodDiscountCodes = food.getFoodDiscountCodes();
-        this.foodReviews = food.getFoodReviews();
+
+
+    public Food(long idStore, long idTypeOfFood, String foodName, String foodImage, String foodPrice, String foodDescribe, List<FoodOption> foodOptions, List<FoodDiscountCode> foodDiscountCodes, List<Cart> carts, List<FoodReviews> foodReviews) {
+        this.idStore = idStore;
+        this.idTypeOfFood = idTypeOfFood;
+        this.foodName = foodName;
+        this.foodImage = foodImage;
+        this.foodPrice = foodPrice;
+        this.foodDescribe = foodDescribe;
+        this.foodOptions = foodOptions;
+        this.foodDiscountCodes = foodDiscountCodes;
+        this.carts = carts;
+        this.foodReviews = foodReviews;
     }
 
-    public FoodDTO() {
+    public Food() {
     }
 
     public long getIdFood() {
@@ -52,13 +78,7 @@ public class FoodDTO {
         this.idStore = idStore;
     }
 
-    public long getIdTypeOfFood() {
-        return idTypeOfFood;
-    }
 
-    public void setIdTypeOfFood(long idTypeOfFood) {
-        this.idTypeOfFood = idTypeOfFood;
-    }
 
     public String getFoodName() {
         return foodName;
@@ -92,6 +112,14 @@ public class FoodDTO {
         this.foodDescribe = foodDescribe;
     }
 
+    public long getIdTypeOfFood() {
+        return idTypeOfFood;
+    }
+
+    public void setIdTypeOfFood(long idTypeOfFood) {
+        this.idTypeOfFood = idTypeOfFood;
+    }
+
     public List<FoodOption> getFoodOptions() {
         return foodOptions;
     }
@@ -106,6 +134,14 @@ public class FoodDTO {
 
     public void setFoodDiscountCodes(List<FoodDiscountCode> foodDiscountCodes) {
         this.foodDiscountCodes = foodDiscountCodes;
+    }
+
+    public List<Cart> getCarts() {
+        return carts;
+    }
+
+    public void setCarts(List<Cart> carts) {
+        this.carts = carts;
     }
 
     public List<FoodReviews> getFoodReviews() {

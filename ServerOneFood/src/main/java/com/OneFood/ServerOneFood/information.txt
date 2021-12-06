@@ -1,0 +1,15 @@
+#Bill
+    - GetAll :
+        user chỉ có thể lấy dánh sách các bill của mình
+        admin có thể lấy tất cả các bill
+    - Get By Id;
+        user chỉ có thể lấy các bill của mình
+        admin có thể lấy được tất cả
+    - update
+        user có thể cập nhật được bill của mình
+        admin
+    - add
+        cần đăng nhập
+    - delete
+        admin
+#Cart tương tự Bill

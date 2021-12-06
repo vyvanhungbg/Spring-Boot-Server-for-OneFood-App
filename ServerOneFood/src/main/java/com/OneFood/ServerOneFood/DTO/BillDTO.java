@@ -1,10 +1,8 @@
 package com.OneFood.ServerOneFood.DTO;
 
-import com.OneFood.ServerOneFood.Model.Bill;
-import com.OneFood.ServerOneFood.Model.OrderFoodDetails;
+import com.OneFood.ServerOneFood.model.Bill;
+import com.OneFood.ServerOneFood.model.OrderFoodDetails;
 
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import java.util.List;
 
 public class BillDTO {
