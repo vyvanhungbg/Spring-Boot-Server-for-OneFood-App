@@ -44,3 +44,5 @@ resources/
 *.iws
 *.iml
 *.ipr
+
+.~m2

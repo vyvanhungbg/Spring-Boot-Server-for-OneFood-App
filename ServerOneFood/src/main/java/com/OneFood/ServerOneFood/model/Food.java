@@ -3,6 +3,7 @@ package com.OneFood.ServerOneFood.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 
@@ -12,15 +13,15 @@ public class Food {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idFood;
-   // @Column(name = "idStore",nullable = false)
+    @NotNull(message = "This field can not be null") // nếu sau chủ store put thì cần xóa
     private long idStore;
-   // @Column(name = "idTypeOfFood",nullable = false)
+    @NotNull(message = "This field can not be null")
     private long idTypeOfFood;
-   // @Column(nullable = false)
+    @NotNull(message = "This field can not be null")
     private String foodName;
-   // @Column(nullable = false)
+    @NotNull(message = "This field can not be null")
     private String foodImage;
-    //@Column(nullable = false)
+    @NotNull(message = "This field can not be null")
     private String foodPrice;
 
     private String foodDescribe;

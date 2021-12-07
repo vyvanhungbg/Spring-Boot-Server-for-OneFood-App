@@ -1,6 +1,7 @@
 package com.OneFood.ServerOneFood.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table
@@ -8,27 +9,29 @@ public class LocationOfUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private long idLocationOfUser;
-   private long idUser;
-   private String nameOfLocation;
-   private String longitude;
-   private String latitude;
-   private String nameOfReceiver;
-   private boolean isDefaultLocation;  // chỉ set 1 trường true
-   private String numberPhoneOfReceiver;
-   private boolean isDeleteLocation = false;
+    private long idLocationOfUser;
+    private long idUser;
+    @NotNull(message = "This field can not be null")
+    private String nameOfLocation;
+    @NotNull(message = "This field can not be null")
+    private String longitude;
+    @NotNull(message = "This field can not be null")
+    private String latitude;
+    @NotNull(message = "This field can not be null")
+    private String nameOfReceiver;
+    private boolean isDefaultLocation;  // chỉ set 1 trường true
+    @NotNull(message = "This field can not be null")
+    private String numberPhoneOfReceiver;
+    private boolean isDeleteLocation = false;
 
 
-
-    public LocationOfUser(long idUser, String nameOfLocation, String longitude, String latitude, String nameOfReceiver, boolean isDefaultLocation, String numberPhoneOfReceiver, boolean isDeleteLocation) {
+    public LocationOfUser(long idUser, String nameOfLocation, String longitude, String latitude, String nameOfReceiver, String numberPhoneOfReceiver) {
         this.idUser = idUser;
         this.nameOfLocation = nameOfLocation;
         this.longitude = longitude;
         this.latitude = latitude;
         this.nameOfReceiver = nameOfReceiver;
-        this.isDefaultLocation = isDefaultLocation;
         this.numberPhoneOfReceiver = numberPhoneOfReceiver;
-        this.isDeleteLocation = isDeleteLocation;
     }
 
     public LocationOfUser() {

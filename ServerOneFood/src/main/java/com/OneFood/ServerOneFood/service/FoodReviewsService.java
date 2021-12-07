@@ -1,5 +1,7 @@
 package com.OneFood.ServerOneFood.service;
 
+import com.OneFood.ServerOneFood.exception.ErrorExecutionFailedException;
+import com.OneFood.ServerOneFood.exception.ErrorNotFoundException;
 import com.OneFood.ServerOneFood.model.ResponseObject;
 import com.OneFood.ServerOneFood.model.FoodReviews;
 import com.OneFood.ServerOneFood.reponsitory.FoodReviewsRepository;
@@ -14,9 +16,12 @@ import java.util.List;
 public class FoodReviewsService {
     @Autowired
     private final FoodReviewsRepository  foodReviewsRepository;
+    @Autowired
+    private final MyService myService;
 
-    public FoodReviewsService(FoodReviewsRepository foodReviewsRepository) {
+    public FoodReviewsService(FoodReviewsRepository foodReviewsRepository, MyService myService) {
         this.foodReviewsRepository = foodReviewsRepository;
+        this.myService = myService;
     }
 
 
@@ -24,48 +29,45 @@ public class FoodReviewsService {
         List<FoodReviews> foodReviews =  foodReviewsRepository.findAll();
         if(foodReviews.isEmpty())
             return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty food review list ", foodReviews));
-        return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Find all successful food reviews ", foodReviews));
+        return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Find "+foodReviews.size()+" food reviews ", foodReviews));
 
     }
 
-    public ResponseEntity<ResponseObject> addNewFoodReviews(FoodReviews foodReviews){
+    public ResponseEntity<ResponseObject> addNewFoodReviews(FoodReviews foodReviews) throws ErrorExecutionFailedException {
+        if(foodReviewsRepository.existsById(foodReviews.getIdFoodReviews()))
+            throw new ErrorExecutionFailedException("New food review create failed Because this item already exists");
+        Long idUser = myService.getPrincipal();
+        foodReviews.setIdUser(idUser);
         FoodReviews savedFoodReviews = foodReviewsRepository.save(foodReviews);
         if(savedFoodReviews == null)
-            return ResponseEntity.status(HttpStatus.FAILED_DEPENDENCY).body(new ResponseObject(false,"New FoodReviews create failed ",savedFoodReviews));
+            throw new ErrorExecutionFailedException("New FoodReviews create failed ");
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"New FoodReviews successfully created ",savedFoodReviews));
 
     }
 
-    public ResponseEntity<ResponseObject> updateFoodReviewsById(Long id, FoodReviews newFoodReviews)  {
-        FoodReviews foodReviews = foodReviewsRepository.findById(id).orElse(null);
-        if(foodReviews==null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject(false,"Cannot find food reviews with id "+id,null));
+    public ResponseEntity<ResponseObject> updateFoodReviewsById(Long id, FoodReviews newFoodReviews) throws ErrorExecutionFailedException, ErrorNotFoundException {
+        FoodReviews foodReviews = foodReviewsRepository.findById(id).orElseThrow(() -> new ErrorNotFoundException("Cannot find food reviews with id "+id));
+
         foodReviews.setFoodReviewsStar(newFoodReviews.getFoodReviewsStar());
         foodReviews.setFoodReviewsImage(newFoodReviews.getFoodReviewsImage());
         foodReviews.setFoodReviewsStatus(newFoodReviews.getFoodReviewsStatus());
         foodReviews.setFoodReviewsTime(newFoodReviews.getFoodReviewsTime());
         foodReviews.setFoodReviewsContent(newFoodReviews.getFoodReviewsContent());
 
-
         FoodReviews updatedFoodReviews = foodReviewsRepository.save(foodReviews);
         if(updatedFoodReviews == null)
-            return ResponseEntity.status(HttpStatus.FAILED_DEPENDENCY).body(new ResponseObject(false,"Food views update failed ",updatedFoodReviews));
+            throw new ErrorExecutionFailedException("Food views update failed ");
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Food views successfully updated ",updatedFoodReviews));
 
     }
 
-    public ResponseEntity<ResponseObject> getFoodReviewsById(Long id) {
-        FoodReviews foodReviews = foodReviewsRepository.findById(id).orElse(null);
-        if(foodReviews==null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject(false,"Cannot find food reviews with id "+id,null));
-
+    public ResponseEntity<ResponseObject> getFoodReviewsById(Long id) throws ErrorNotFoundException {
+        FoodReviews foodReviews = foodReviewsRepository.findById(id).orElseThrow(() -> new ErrorNotFoundException("Cannot find food reviews with id "+id));
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Find successful food reviews with id "+id,foodReviews));
     }
 
-    public ResponseEntity<ResponseObject> deleteFoodReviewsById(Long id) {
-        FoodReviews foodReviews = foodReviewsRepository.findById(id).orElse(null);
-        if(foodReviews==null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject(false,"Cannot find food review with id "+id,null));
+    public ResponseEntity<ResponseObject> deleteFoodReviewsById(Long id) throws ErrorNotFoundException {
+        FoodReviews foodReviews = foodReviewsRepository.findById(id).orElseThrow(() -> new ErrorNotFoundException("Cannot find food review with id "+id));
         foodReviewsRepository.delete(foodReviews);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Delete successful food review with id "+id,foodReviews));
     }

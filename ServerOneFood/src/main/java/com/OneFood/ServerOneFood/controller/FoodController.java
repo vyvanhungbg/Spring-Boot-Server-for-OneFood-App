@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("one-app/v1/food")
 public class FoodController {
@@ -28,12 +30,15 @@ public class FoodController {
     }
 
     @PostMapping("")
-    public ResponseEntity<ResponseObject> addNewFood(@RequestBody Food food) throws ErrorExecutionFailedException {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ResponseObject> addNewFood(@Valid @RequestBody Food food) throws ErrorExecutionFailedException {
         return foodService.addNewFood(food);
     }
 
+
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseObject> updateFood(@PathVariable(value = "id") Long id, @RequestBody Food newFood) throws ErrorNotFoundException {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ResponseObject> updateFood(@PathVariable(value = "id") Long id, @Valid @RequestBody Food newFood) throws ErrorNotFoundException {
         return foodService.updateFoodById(id,newFood);
     }
     @PreAuthorize("hasAuthority('ADMIN')")

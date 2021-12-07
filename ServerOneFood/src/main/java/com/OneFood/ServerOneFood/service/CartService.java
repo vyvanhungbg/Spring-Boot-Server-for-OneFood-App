@@ -1,5 +1,6 @@
 package com.OneFood.ServerOneFood.service;
 
+import com.OneFood.ServerOneFood.exception.ErrorAccessDeniedException;
 import com.OneFood.ServerOneFood.exception.ErrorExecutionFailedException;
 import com.OneFood.ServerOneFood.exception.ErrorNotFoundException;
 import com.OneFood.ServerOneFood.model.ResponseObject;
@@ -8,7 +9,7 @@ import com.OneFood.ServerOneFood.reponsitory.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,17 +30,20 @@ public class CartService {
 
     public ResponseEntity<ResponseObject> getAllCart(){
         List<Cart> carts =  cartRepository.findAll();
+        if(carts.isEmpty())
+            return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty cart list ", carts));
         List<Cart> newCarts = new ArrayList<>(carts);
         Long idUser = myService.getPrincipal();
         if(!myService.isRoleAdmin())
             newCarts = carts.stream().filter(bill -> bill.getIdUser() == idUser).collect(Collectors.toList());
-        if(carts.isEmpty())
-            return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty cart list ", carts));
+
         return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Find "+newCarts.size()+" cart successful", newCarts));
 
     }
 
     public ResponseEntity<ResponseObject> addNewCart(Cart newCart) throws ErrorExecutionFailedException {
+        if(cartRepository.existsById(newCart.getIdCart()))
+            throw new ErrorExecutionFailedException("New cart create failed Because this item already exists");
         Long idUser = myService.getPrincipal();
         newCart.setIdUser(idUser);
         Cart cart = cartRepository.save(newCart);
@@ -49,11 +53,11 @@ public class CartService {
 
     }
 
-    public ResponseEntity<ResponseObject> updateCartById(Long id, Cart newCart) throws ErrorNotFoundException {
+    public ResponseEntity<ResponseObject> updateCartById(Long id, Cart newCart) throws ErrorNotFoundException, ErrorAccessDeniedException {
         Cart cart = cartRepository.findById(id).orElseThrow(() -> new ErrorNotFoundException("Cannot find product with id "+id));
         Long idUser = myService.getPrincipal();
         if(cart.getIdUser() != idUser && !myService.isRoleAdmin()){
-            throw new AccessDeniedException("Access is denied");
+            throw new ErrorAccessDeniedException("Access is denied");
         }
         cart.setCartNumberOfFood(newCart.getCartNumberOfFood());
         cart.setStatus(newCart.isStatus());
@@ -64,8 +68,11 @@ public class CartService {
 
     }
 
-    public ResponseEntity<ResponseObject> getCartById(Long id) throws ErrorNotFoundException {
+    public ResponseEntity<ResponseObject> getCartById(Long id) throws ErrorNotFoundException, ErrorAccessDeniedException {
         Cart cart = cartRepository.findById(id).orElseThrow(() -> new ErrorNotFoundException("Cannot find product with id "+id));
+        Long idUser = myService.getPrincipal();
+        if(idUser!=cart.getIdUser())
+            throw new ErrorAccessDeniedException("Access is denied");
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Find successful product with id "+id,cart));
     }
 

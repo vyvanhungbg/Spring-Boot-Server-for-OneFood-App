@@ -1,6 +1,7 @@
 package com.OneFood.ServerOneFood.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 // Cửa hàng cung cấp thực phẩm
@@ -10,11 +11,17 @@ public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idStore;
+    @NotNull(message = "This field can not be null")
     private String storeName;
+    @NotNull(message = "This field can not be null")
     private String storeImage;
+    @NotNull(message = "This field can not be null")
     private String storeAddress;
+    @NotNull(message = "This field can not be null")
     private String storeLongitude;
+    @NotNull(message = "This field can not be null")
     private String storeLatitude;
+    @NotNull(message = "This field can not be null")
     private String storeWorkTime;
 
     @OneToMany(targetEntity = Food.class)

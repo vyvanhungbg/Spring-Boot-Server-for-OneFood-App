@@ -1,6 +1,7 @@
 package com.OneFood.ServerOneFood.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 
 // Class này sẽ là thực thể cho các loại size M, L ,S or các mức giá đồ ăn
@@ -12,10 +13,13 @@ public class FoodOption {
     private long idFoodOption;
     private long idFood;
     @Column(name = "sizeOfFoodOption")
+    @NotNull(message = "This field can not be null")
     private int sizeOfFoodOption;
     @Column(name = "descriptionFoodOption")
+    @NotNull(message = "This field can not be null")
     private String descriptionFoodOption;
     @Column(name = "priceOfFoodOption")
+    @NotNull(message = "This field can not be null")
     private String priceOfFoodOption;
 
 

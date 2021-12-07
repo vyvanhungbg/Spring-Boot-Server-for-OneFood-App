@@ -1,6 +1,7 @@
 package com.OneFood.ServerOneFood.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
@@ -9,6 +10,7 @@ public class TypeOfDiscountCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idTypeOfDiscountCode;
+    @NotNull(message = "This field can not be null")
     private String typeOfDiscountCodeName;
 
     @OneToMany(targetEntity = FoodDiscountCode.class)

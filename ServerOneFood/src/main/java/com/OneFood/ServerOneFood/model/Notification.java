@@ -1,9 +1,14 @@
 package com.OneFood.ServerOneFood.model;
 
+import lombok.Data;
+
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "notification")
+@Data
 public class Notification {
 
     @Id
@@ -11,10 +16,14 @@ public class Notification {
     private long idNotification;
     private long idBill;
     private long idUser;
+    @NotNull(message = "This field can not be null")
     private String notificationContent;
+    @NotNull(message = "This field can not be null")
     private String notificationTime;
+    @NotNull(message = "This field can not be null")
     private String notificationStatus;
     private String notificationImage;
+    @NotNull(message = "This field can not be null")
     private String notificationTitle;
 
     public Notification(long idBill, long idUser, String notificationContent, String notificationTime, String notificationStatus, String notificationImage, String notificationTitle) {

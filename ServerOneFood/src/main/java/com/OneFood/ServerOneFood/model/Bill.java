@@ -2,7 +2,9 @@ package com.OneFood.ServerOneFood.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Table
@@ -12,20 +14,38 @@ public class Bill {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private long idBill;
+
    @Column(nullable = false)
+
    private long idUser;
+
    @Column(nullable = false)
+   @NotNull(message = "This field can not be null")
    private long idStore;
+
    @Column(nullable = false)
+   @NotNull(message = "This field can not be null")
    private long idLocationOfUser;
+
+   @NotNull(message = "This field can not be null")
    private String billDiscountAmountFromDiscountCode;
+
+   @NotNull(message = "This field can not be null")
    private String billDiscountAmountFromCodeFreeShip;
+
+   @NotNull(message = "This field can not be null")
    private String billMoneyOfShip;
 
+   @NotNull(message = "This field can not be null")
    private String billTotalMoney;
+
+   @NotNull(message = "This field can not be null")
    private String billMoneyToBePaid;
 
+   @NotNull(message = "This field can not be null")
    private String billPayMethod;
+
+   @NotNull(message = "This field can not be null")
    private int    billStatus; // 0 destroy , 1 pending , 2 confirm , 3 done
 
    private String billTimeOrder;
@@ -38,6 +58,7 @@ public class Bill {
    @JsonIgnore
    @OneToMany(targetEntity = OrderFoodDetails.class)
    @JoinColumn(name = "idBill", referencedColumnName = "idBill")
+   @NotNull(message = "This field can not be null")
    private List<OrderFoodDetails> orderFoodDetails;
 
    public Bill() {

@@ -1,5 +1,6 @@
 package com.OneFood.ServerOneFood.controller;
 
+import com.OneFood.ServerOneFood.exception.ErrorAccessDeniedException;
 import com.OneFood.ServerOneFood.exception.ErrorExecutionFailedException;
 import com.OneFood.ServerOneFood.exception.ErrorNotFoundException;
 import com.OneFood.ServerOneFood.model.Bill;
@@ -11,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("one-app/v1/bill")
@@ -32,17 +35,17 @@ public class BillController {
 
     @GetMapping("/{id}")
     @PostAuthorize("@myService.castResponseObjectToBill(returnObject.body).idUser == authentication.principal.user.idUser or hasAuthority('ADMIN')")
-    public ResponseEntity<ResponseObject> getBillById(@PathVariable Long id) throws ErrorNotFoundException {
+    public ResponseEntity<ResponseObject> getBillById(@PathVariable Long id) throws ErrorNotFoundException, ErrorAccessDeniedException {
         return billService.getBillById(id);
     }
 
     @PostMapping("")
-    ResponseEntity<ResponseObject> addNewTypeOfDiscount(@RequestBody Bill bill) throws ErrorExecutionFailedException {
+    ResponseEntity<ResponseObject> addNewTypeOfDiscount(@Valid @RequestBody Bill bill) throws ErrorExecutionFailedException {
         return billService.addNewBill(bill);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseObject> updateBillsById(@PathVariable(value = "id") Long id, @RequestBody Bill newBill) throws ErrorNotFoundException, ErrorExecutionFailedException {
+    public ResponseEntity<ResponseObject> updateBillsById(@PathVariable(value = "id") Long id, @Valid @RequestBody Bill newBill) throws ErrorNotFoundException, ErrorExecutionFailedException, ErrorAccessDeniedException {
         return billService.updateBillById(id,newBill);
     }
 

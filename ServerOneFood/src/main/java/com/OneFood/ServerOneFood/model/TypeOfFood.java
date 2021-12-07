@@ -1,6 +1,7 @@
 package com.OneFood.ServerOneFood.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 
@@ -12,9 +13,9 @@ public class TypeOfFood {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idTypeOfFood;
 
-    @Column()
+    @NotNull(message = "This field can not be null")
     private String typeOfFoodName;
-    @Column()
+    @NotNull(message = "This field can not be null")
     private String typeOfFoodImage;
 
     @OneToMany(targetEntity = Food.class)

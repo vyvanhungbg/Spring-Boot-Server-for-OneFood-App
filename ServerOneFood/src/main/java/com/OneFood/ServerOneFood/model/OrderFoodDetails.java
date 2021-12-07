@@ -1,6 +1,7 @@
 package com.OneFood.ServerOneFood.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Table
 @Entity
@@ -8,9 +9,13 @@ public class OrderFoodDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idOrderFoodDetails;
+    @NotNull(message = "This field can not be null")
     private long idFood;
+    @NotNull(message = "This field can not be null")
     private long idBill;
+    @NotNull(message = "This field can not be null")
     private int numberOfFood;
+    @NotNull(message = "This field can not be null")
     private String foodPrice;
 
     public OrderFoodDetails(long idFood, long idBill, int numberOfFood, String foodPrice) {

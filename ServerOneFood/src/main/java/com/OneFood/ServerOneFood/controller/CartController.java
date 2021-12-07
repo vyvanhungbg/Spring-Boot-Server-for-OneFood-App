@@ -1,5 +1,6 @@
 package com.OneFood.ServerOneFood.controller;
 
+import com.OneFood.ServerOneFood.exception.ErrorAccessDeniedException;
 import com.OneFood.ServerOneFood.exception.ErrorExecutionFailedException;
 import com.OneFood.ServerOneFood.exception.ErrorNotFoundException;
 import com.OneFood.ServerOneFood.model.ResponseObject;
@@ -11,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 
 @RestController
@@ -33,17 +36,17 @@ public class CartController {
 
     @GetMapping("/{id}")
     @PostAuthorize("@myService.castResponseObjectToCart(returnObject.body).idUser == authentication.principal.user.idUser or hasAuthority('ADMIN')")
-    public ResponseEntity<ResponseObject> getCartById(@PathVariable Long id) throws ErrorNotFoundException {
+    public ResponseEntity<ResponseObject> getCartById(@PathVariable Long id) throws ErrorNotFoundException, ErrorAccessDeniedException {
         return cartService.getCartById(id);
     }
 
     @PostMapping("")
-    ResponseEntity<ResponseObject> addNewTypeOfDiscount(@RequestBody Cart user) throws ErrorExecutionFailedException {
+    ResponseEntity<ResponseObject> addNewTypeOfDiscount(@Valid @RequestBody Cart user) throws ErrorExecutionFailedException {
         return cartService.addNewCart(user);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseObject> updateCartById(@PathVariable(value = "id") Long id, @RequestBody Cart newCart) throws ErrorNotFoundException {
+    public ResponseEntity<ResponseObject> updateCartById(@PathVariable(value = "id") Long id, @Valid @RequestBody Cart newCart) throws ErrorNotFoundException, ErrorAccessDeniedException {
         return cartService.updateCartById(id,newCart);
     }
     @DeleteMapping("/{id}")

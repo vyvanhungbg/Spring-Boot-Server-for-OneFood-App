@@ -1,6 +1,7 @@
 package com.OneFood.ServerOneFood.config;
 
 import com.OneFood.ServerOneFood.JWT.JwtAuthenticationFilter;
+import com.OneFood.ServerOneFood.exception.ErrorAccessDeniedException;
 import com.OneFood.ServerOneFood.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -66,7 +67,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/food").permitAll();
                 //.anyRequest().authenticated(); // Tất cả các request khác đều cần phải xác thực mới được truy cập
 
-        http.authorizeRequests().and().exceptionHandling().accessDeniedHandler((request, response, accessDeniedException) -> new AccessDeniedException("Access is denied"));
+        http.authorizeRequests().and().exceptionHandling().accessDeniedHandler((request, response, accessDeniedException) -> new ErrorAccessDeniedException("Access is denied"));
         // Thêm một lớp Filter kiểm tra jwt
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }

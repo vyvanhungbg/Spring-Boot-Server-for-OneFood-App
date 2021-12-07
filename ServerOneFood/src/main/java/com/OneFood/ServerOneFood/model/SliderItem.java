@@ -1,6 +1,7 @@
 package com.OneFood.ServerOneFood.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table
@@ -8,7 +9,9 @@ public class SliderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idSliderItem;
+    @NotNull(message = "This field can not be null")
     private String imageUrl;
+    @NotNull(message = "This field can not be null")
     private String description;
 
 

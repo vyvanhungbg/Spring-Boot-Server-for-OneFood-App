@@ -1,5 +1,7 @@
 package com.OneFood.ServerOneFood.service;
 
+import com.OneFood.ServerOneFood.exception.ErrorExecutionFailedException;
+import com.OneFood.ServerOneFood.exception.ErrorNotFoundException;
 import com.OneFood.ServerOneFood.model.ResponseObject;
 import com.OneFood.ServerOneFood.model.TypeOfDiscountCode;
 import com.OneFood.ServerOneFood.reponsitory.TypeOfDiscountCodeRepository;
@@ -27,38 +29,33 @@ public class TypeOfDiscountCodeService {
 
     }
 
-    public ResponseEntity<ResponseObject> addNewTypeOfDiscount(TypeOfDiscountCode typeOfDiscountCode){
+    public ResponseEntity<ResponseObject> addNewTypeOfDiscount(TypeOfDiscountCode typeOfDiscountCode) throws ErrorExecutionFailedException {
         TypeOfDiscountCode savedTypeOfDiscountCode =typeOfDiscountCodeRepository.save(typeOfDiscountCode);
         if(savedTypeOfDiscountCode == null)
-            return  ResponseEntity.status(HttpStatus.FAILED_DEPENDENCY).body(new ResponseObject(false,"New type of discount save failed !", null));
+            throw new ErrorExecutionFailedException("New type of discount save failed !");
         return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"New type of discount save successful ! ", savedTypeOfDiscountCode));
     }
 
-    public ResponseEntity<ResponseObject> updateTypeOfDiscountCodeById(Long id, TypeOfDiscountCode newTypeOfDiscountCode)  {
-        TypeOfDiscountCode typeOfDiscountCode = typeOfDiscountCodeRepository.findById(id).orElse(null);
-        if(typeOfDiscountCode==null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject(false,"Cannot find type of discount with id "+id,null));
+    public ResponseEntity<ResponseObject> updateTypeOfDiscountCodeById(Long id, TypeOfDiscountCode newTypeOfDiscountCode) throws ErrorNotFoundException, ErrorExecutionFailedException {
+        TypeOfDiscountCode typeOfDiscountCode = typeOfDiscountCodeRepository.findById(id).orElseThrow(() -> new ErrorNotFoundException("Cannot find type of discount with id "+id));
+
         typeOfDiscountCode.setTypeOfDiscountCodeName(newTypeOfDiscountCode.getTypeOfDiscountCodeName());
         typeOfDiscountCode.setFoodDiscountCodes(newTypeOfDiscountCode.getFoodDiscountCodes());
 
         TypeOfDiscountCode updatedTypeOfDiscountCode = typeOfDiscountCodeRepository.save(typeOfDiscountCode);
         if(updatedTypeOfDiscountCode!=null)
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Update successful type of food with id "+id,typeOfDiscountCode));
+            throw new ErrorExecutionFailedException("Update successful type of food with id "+id);
         return  ResponseEntity.status(HttpStatus.FAILED_DEPENDENCY).body(new ResponseObject(false,"New type of discount update failed !", null));
     }
 
-    public ResponseEntity<ResponseObject> getTypeOfDiscountCodeById(Long id) {
-        Optional<TypeOfDiscountCode> typeOfDiscountCode = typeOfDiscountCodeRepository.findById(id);
-        if(typeOfDiscountCode.isPresent()){
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Successful search type of discount with id "+id,typeOfDiscountCode));
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject(false,"Cannot find type discount with id "+id,null));
+    public ResponseEntity<ResponseObject> getTypeOfDiscountCodeById(Long id) throws ErrorNotFoundException {
+        TypeOfDiscountCode typeOfDiscountCode = typeOfDiscountCodeRepository.findById(id).orElseThrow(() -> new ErrorNotFoundException("Cannot find type of discount with id "+id));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Successful search type of discount with id "+id,typeOfDiscountCode));
+
     }
 
-    public ResponseEntity<ResponseObject> deleteTypeOfDiscountCodeById(Long id) {
-        TypeOfDiscountCode typeOfDiscountCode = typeOfDiscountCodeRepository.findById(id).orElse(null);
-        if(typeOfDiscountCode==null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject(false,"Cannot find type of discount with id "+id,null));
+    public ResponseEntity<ResponseObject> deleteTypeOfDiscountCodeById(Long id) throws ErrorNotFoundException {
+        TypeOfDiscountCode typeOfDiscountCode = typeOfDiscountCodeRepository.findById(id).orElseThrow(() -> new ErrorNotFoundException("Cannot find type of discount with id "+id));
         typeOfDiscountCodeRepository.delete(typeOfDiscountCode);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Delete successful type of discount with id "+id,typeOfDiscountCode));
 

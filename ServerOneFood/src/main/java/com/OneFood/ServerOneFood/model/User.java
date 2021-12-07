@@ -5,6 +5,7 @@ package com.OneFood.ServerOneFood.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,15 +18,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idUser;
     @Column(unique = true,nullable = false)
+    @NotNull(message = "This field can not be null")
     private String userName;
+    @NotNull(message = "This field can not be null")
     private String userPassword;
     private String userImage;
     private String userDateOfBirth;
     private String userSex;
     private String userMoney;
     @Column(unique = true,nullable = false)
+    @NotNull(message = "This field can not be null")
     private String userNumberPhone;
     @Column(unique = true,nullable = false)
+    @NotNull(message = "This field can not be null")
     private String userEmail;
     private boolean enable;
 

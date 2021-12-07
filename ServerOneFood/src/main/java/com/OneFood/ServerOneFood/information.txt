@@ -13,3 +13,32 @@
     - delete
         admin
 #Cart tương tự Bill
+-
+#Food
+    - Chưa đăng nhập cho thẻ lấy dữ liệu
+    - Chỉ ADMIn mới có quyền thêm sửa xóa
+#FoodDiscountCode
+    - User có thể get , getAll, Không thể add , không thể xóa , có thể update
+    -Admin
+
+#FoodOptionService
+    -user chi get , getAll
+    - Admin toàn quyền
+#Food Review
+    -user add, get , get All
+    -
+#Location
+    -user có quyen moi quyen
+    - CẦN THÊM XÓA MỀM ĐỂ ĐẢM BẢO TRUY VẤN SANG CHO Bill
+#Notification
+    - user có quyền getAll của user, get id
+#OderfoodDetail
+    - user có quyền get By Id , get All , get By Id Bill , Thêm sủa xóa trong phạm vi ràng buộc bill của bản thân mơi đc sửa
+
+
+--- Chung
+    -- Tất cả đều check @requestbody
+    -- Tất cả các trường user có quyền thêm sửa xóa chỉ có thể thao tác với trường của bản thân , không thao tác được các trường của user khác
+    -- Các entity đặc trưng của user như notification , location , cart , khi add thì tự động lấy idUser
+    ????????? Mặc định những bẳng nào có idUSer thì check idUSer quyền ,và set(idUser) trong add
+    // Những bảng như vậy khi get all cần lọc ra của user đó

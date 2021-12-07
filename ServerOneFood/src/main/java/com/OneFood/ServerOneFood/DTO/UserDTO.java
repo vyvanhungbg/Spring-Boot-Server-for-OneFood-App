@@ -31,7 +31,7 @@ public class UserDTO {
 
     public UserDTO(User user) {
         this.idUser = user.getIdUser();
-        this.userName = user.getUserEmail();
+        this.userName = user.getUserName();
         this.userImage = user.getUserImage();
         this.userDateOfBirth = user.getUserDateOfBirth();
         this.userSex = user.getUserSex();

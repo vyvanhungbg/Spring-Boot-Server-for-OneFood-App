@@ -1,6 +1,7 @@
 package com.OneFood.ServerOneFood.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table
@@ -11,9 +12,12 @@ public class FoodReviews {
     private long idFoodReviews;
     private long idFood;
     private long idUser;
+    @NotNull(message = "This field can not be null")
     private String foodReviewsContent;
     private String foodReviewsImage;
+    @NotNull(message = "This field can not be null")
     private String foodReviewsStar;
+    @NotNull(message = "This field can not be null")
     private String foodReviewsTime;
     private String foodReviewsStatus;
 
