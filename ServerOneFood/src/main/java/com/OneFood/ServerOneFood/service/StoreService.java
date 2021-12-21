@@ -25,7 +25,7 @@ public class StoreService {
         Store savedStore = storeRepository.save(store);
         if(savedStore == null)
             throw new ErrorExecutionFailedException("New store save failed !");
-        return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"New store save successful ! ", store));
+        return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"New store save successful ! id: ", store));
     }
 
     public ResponseEntity<ResponseObject>  getAllStore(){

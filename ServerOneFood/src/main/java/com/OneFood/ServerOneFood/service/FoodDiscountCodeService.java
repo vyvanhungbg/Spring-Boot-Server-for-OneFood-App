@@ -48,7 +48,7 @@ public class FoodDiscountCodeService {
        foodDiscountCode.setFoodDiscountCodeByPercent(newFoodDiscountCode.getFoodDiscountCodeByPercent());
        foodDiscountCode.setFoodDiscountCodeDescribe(newFoodDiscountCode.getFoodDiscountCodeDescribe());
        foodDiscountCode.setFoodDiscountCodeImage(newFoodDiscountCode.getFoodDiscountCodeImage());
-       foodDiscountCode.setFoodDiscountCodeByPaymentMethod(newFoodDiscountCode.getFoodDiscountCodeByPaymentMethod());
+
        foodDiscountCode.setFoodDiscountCodeStatus(newFoodDiscountCode.getFoodDiscountCodeStatus());
        foodDiscountCode.setFoodDiscountCodeIsDestroy(newFoodDiscountCode.getFoodDiscountCodeIsDestroy());
        foodDiscountCode.setFoodDiscountEndTime(newFoodDiscountCode.getFoodDiscountEndTime());

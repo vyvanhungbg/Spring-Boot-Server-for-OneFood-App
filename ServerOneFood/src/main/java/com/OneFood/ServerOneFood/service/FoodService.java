@@ -12,8 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FoodService {
@@ -25,15 +27,24 @@ public class FoodService {
         this.foodRepository = foodRepository;
     }
 
-    public ResponseEntity<ResponseObject> getAllFood(){
+    public ResponseEntity<ResponseObject> getAllFood(boolean sorted,int limit){
         List<Food> foods =  foodRepository.findAll();
-        List<FoodDTO> foodDTOs = new ArrayList<>();
-        foods.stream().forEach(food -> foodDTOs.add(new FoodDTO(food)));
+        //List<FoodDTO> foodDTOs = new ArrayList<>();
+        //foods.stream().forEach(food -> foodDTOs.add(new FoodDTO(food)));
+
+        List<FoodDTO> foodDTOs = foods.stream().map(food -> new FoodDTO(food)).collect(Collectors.toList());
+        if(sorted)
+            foodDTOs = foodDTOs.stream().sorted(Comparator.comparingDouble(value -> Double.parseDouble(value.getFoodPrice()))).collect(Collectors.toList());
+        if(limit>=0)
+            foodDTOs = foodDTOs.stream().limit(limit).collect(Collectors.toList());
+
         if(foods.isEmpty())
             return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty food list ", foodDTOs));
         return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Find "+foodDTOs.size()+" food successful  ", foodDTOs));
 
     }
+
+
 
     public ResponseEntity<ResponseObject> getFoodById(Long id) throws ErrorNotFoundException {
         Food food = foodRepository.findById(id).orElseThrow(() -> new ErrorNotFoundException("Cannot find food with id "+id));
@@ -44,7 +55,7 @@ public class FoodService {
         Food savedFood = foodRepository.save(food);
         if(savedFood == null)
             throw new ErrorExecutionFailedException("New  food save failed !");
-        return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"New  food save successful ! ", new FoodDTO(savedFood)));
+        return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"New  food save successful ! "+savedFood.getIdFood(), new FoodDTO(savedFood)));
     }
 
     public ResponseEntity<ResponseObject> updateFoodById(Long id, Food newFood) throws ErrorNotFoundException {

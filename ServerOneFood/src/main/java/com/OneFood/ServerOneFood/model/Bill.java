@@ -55,7 +55,7 @@ public class Bill {
    private String billNote;
 
 
-   @JsonIgnore
+   //@JsonIgnore
    @OneToMany(targetEntity = OrderFoodDetails.class)
    @JoinColumn(name = "idBill", referencedColumnName = "idBill")
    @NotNull(message = "This field can not be null")

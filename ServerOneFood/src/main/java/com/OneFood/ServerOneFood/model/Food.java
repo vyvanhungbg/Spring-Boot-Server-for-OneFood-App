@@ -28,7 +28,7 @@ public class Food {
 
 
 
-    @OneToMany(targetEntity = FoodOption.class, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = FoodOption.class)
     @JoinColumn(name = "idFood",referencedColumnName = "idFood") // cot idFood ở bảng Food Option sẽ tham chiếu tới idFood cửa bảng Food
     private List<FoodOption> foodOptions;
 

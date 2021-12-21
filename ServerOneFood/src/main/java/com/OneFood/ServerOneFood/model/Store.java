@@ -17,6 +17,8 @@ public class Store {
     private String storeImage;
     @NotNull(message = "This field can not be null")
     private String storeAddress;
+
+    private String storeStart;
     @NotNull(message = "This field can not be null")
     private String storeLongitude;
     @NotNull(message = "This field can not be null")
@@ -38,10 +40,11 @@ public class Store {
     public Store() {
     }
 
-    public Store(String storeName, String storeImage, String storeAddress, String storeLongitude, String storeLatitude, String storeWorkTime, List<Food> foods, List<FoodDiscountCode> foodDiscountCodes, List<Bill> bills) {
+    public Store(String storeName, String storeImage, String storeAddress, String storeStart, String storeLongitude, String storeLatitude, String storeWorkTime, List<Food> foods, List<FoodDiscountCode> foodDiscountCodes, List<Bill> bills) {
         this.storeName = storeName;
         this.storeImage = storeImage;
         this.storeAddress = storeAddress;
+        this.storeStart = storeStart;
         this.storeLongitude = storeLongitude;
         this.storeLatitude = storeLatitude;
         this.storeWorkTime = storeWorkTime;
@@ -82,6 +85,14 @@ public class Store {
         this.storeAddress = storeAddress;
     }
 
+    public String getStoreStart() {
+        return storeStart;
+    }
+
+    public void setStoreStart(String storeStart) {
+        this.storeStart = storeStart;
+    }
+
     public String getStoreLongitude() {
         return storeLongitude;
     }
@@ -120,5 +131,13 @@ public class Store {
 
     public void setFoodDiscountCodes(List<FoodDiscountCode> foodDiscountCodes) {
         this.foodDiscountCodes = foodDiscountCodes;
+    }
+
+    public List<Bill> getBills() {
+        return bills;
+    }
+
+    public void setBills(List<Bill> bills) {
+        this.bills = bills;
     }
 }

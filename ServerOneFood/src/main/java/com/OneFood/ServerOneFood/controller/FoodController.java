@@ -20,9 +20,11 @@ public class FoodController {
         this.foodService = foodService;
     }
     @GetMapping("")
-    ResponseEntity<ResponseObject> getAllFood(){
-        return foodService.getAllFood();
+    ResponseEntity<ResponseObject> getAllFood(@RequestParam(value = "sortedByPrice", defaultValue = "false") boolean sorted,@RequestParam(value = "limit", defaultValue = "-1") int limit ){
+        return foodService.getAllFood(sorted, limit);
     }
+
+
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseObject> getFoodById(@PathVariable Long id) throws ErrorNotFoundException {

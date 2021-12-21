@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping("one-app/v1/login")
 public class LoginController {
 
     @Autowired
@@ -43,8 +43,6 @@ public class LoginController {
                    )
            );
            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-           // Trả về jwt cho người dùng.
            String jwt = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Successful ", jwt));
 
@@ -53,8 +51,7 @@ public class LoginController {
            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"Incorrect account or password  ", null));
        }
 
-        // Nếu không xảy ra exception tức là thông tin hợp lệ
-        // Set thông tin authentication vào Security Context
+
     }
 
 

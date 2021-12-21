@@ -12,14 +12,15 @@ public class TypeOfDiscountCode {
     private long idTypeOfDiscountCode;
     @NotNull(message = "This field can not be null")
     private String typeOfDiscountCodeName;
+    private Long idPaymentMethod;
 
     @OneToMany(targetEntity = FoodDiscountCode.class)
     @JoinColumn(name = "idTypeOfDiscountCode", referencedColumnName = "idTypeOfDiscountCode")
     private List<FoodDiscountCode> foodDiscountCodes;
 
-    public TypeOfDiscountCode(long idTypeOfDiscountCode, String typeOfDiscountCodeName, List<FoodDiscountCode> foodDiscountCodes) {
-        this.idTypeOfDiscountCode = idTypeOfDiscountCode;
+    public TypeOfDiscountCode(String typeOfDiscountCodeName, Long idPaymentMethod, List<FoodDiscountCode> foodDiscountCodes) {
         this.typeOfDiscountCodeName = typeOfDiscountCodeName;
+        this.idPaymentMethod = idPaymentMethod;
         this.foodDiscountCodes = foodDiscountCodes;
     }
 
@@ -48,5 +49,13 @@ public class TypeOfDiscountCode {
 
     public void setTypeOfDiscountCodeName(String typeOfDiscountCodeName) {
         this.typeOfDiscountCodeName = typeOfDiscountCodeName;
+    }
+
+    public Long getIdPaymentMethod() {
+        return idPaymentMethod;
+    }
+
+    public void setIdPaymentMethod(Long idPaymentMethod) {
+        this.idPaymentMethod = idPaymentMethod;
     }
 }

@@ -4,7 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "food_discount_cde")
+@Table(name = "food_discount_code")
 public class FoodDiscountCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,7 +16,6 @@ public class FoodDiscountCode {
     private int foodDiscountCodeIsDestroy;
     int foodDiscountCodeStatus;
     @NotNull(message = "This field can not be null")
-    private String foodDiscountCodeByPaymentMethod;
     private String foodDiscountCodeDescribe;
     private String foodDiscountCodeImage;
     @NotNull(message = "This field can not be null")
@@ -29,13 +28,12 @@ public class FoodDiscountCode {
     public FoodDiscountCode() {
     }
 
-    public FoodDiscountCode( long idStore, long idFood, long idTypeOfDiscountCode, int foodDiscountCodeIsDestroy, int foodDiscountCodeStatus, String foodDiscountCodeByPaymentMethod, String foodDiscountCodeDescribe, String foodDiscountCodeImage, String foodDiscountEndTime, String foodDiscountStartTime, String foodDiscountCodeByMoney, String foodDiscountCodeByPercent) {
+    public FoodDiscountCode( long idStore, long idFood, long idTypeOfDiscountCode, int foodDiscountCodeIsDestroy, int foodDiscountCodeStatus, String foodDiscountCodeDescribe, String foodDiscountCodeImage, String foodDiscountEndTime, String foodDiscountStartTime, String foodDiscountCodeByMoney, String foodDiscountCodeByPercent) {
         this.idStore = idStore;
         this.idFood = idFood;
         this.idTypeOfDiscountCode = idTypeOfDiscountCode;
         this.foodDiscountCodeIsDestroy = foodDiscountCodeIsDestroy;
         this.foodDiscountCodeStatus = foodDiscountCodeStatus;
-        this.foodDiscountCodeByPaymentMethod = foodDiscountCodeByPaymentMethod;
         this.foodDiscountCodeDescribe = foodDiscountCodeDescribe;
         this.foodDiscountCodeImage = foodDiscountCodeImage;
         this.foodDiscountEndTime = foodDiscountEndTime;
@@ -92,13 +90,7 @@ public class FoodDiscountCode {
         this.foodDiscountCodeStatus = foodDiscountCodeStatus;
     }
 
-    public String getFoodDiscountCodeByPaymentMethod() {
-        return foodDiscountCodeByPaymentMethod;
-    }
 
-    public void setFoodDiscountCodeByPaymentMethod(String foodDiscountCodeByPaymentMethod) {
-        this.foodDiscountCodeByPaymentMethod = foodDiscountCodeByPaymentMethod;
-    }
 
     public String getFoodDiscountCodeDescribe() {
         return foodDiscountCodeDescribe;
