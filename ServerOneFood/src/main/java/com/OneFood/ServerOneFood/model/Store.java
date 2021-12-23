@@ -25,6 +25,7 @@ public class Store {
     private String storeLatitude;
     @NotNull(message = "This field can not be null")
     private String storeWorkTime;
+    private String storeSlogan;
 
     @OneToMany(targetEntity = Food.class)
     @JoinColumn(name = "idStore",referencedColumnName = "idStore" )
@@ -40,7 +41,7 @@ public class Store {
     public Store() {
     }
 
-    public Store(String storeName, String storeImage, String storeAddress, String storeStart, String storeLongitude, String storeLatitude, String storeWorkTime, List<Food> foods, List<FoodDiscountCode> foodDiscountCodes, List<Bill> bills) {
+    public Store(String storeName, String storeImage, String storeAddress, String storeStart, String storeLongitude, String storeLatitude, String storeWorkTime, String storeSlogan, List<Food> foods, List<FoodDiscountCode> foodDiscountCodes, List<Bill> bills) {
         this.storeName = storeName;
         this.storeImage = storeImage;
         this.storeAddress = storeAddress;
@@ -48,6 +49,7 @@ public class Store {
         this.storeLongitude = storeLongitude;
         this.storeLatitude = storeLatitude;
         this.storeWorkTime = storeWorkTime;
+        this.storeSlogan = storeSlogan;
         this.foods = foods;
         this.foodDiscountCodes = foodDiscountCodes;
         this.bills = bills;
@@ -119,6 +121,14 @@ public class Store {
 
     public List<Food> getFoods() {
         return foods;
+    }
+
+    public String getStoreSlogan() {
+        return storeSlogan;
+    }
+
+    public void setStoreSlogan(String storeSlogan) {
+        this.storeSlogan = storeSlogan;
     }
 
     public void setFoods(List<Food> foods) {

@@ -13,6 +13,8 @@ public class FoodDTO {
     private String foodImage;
     private String foodPrice;
     private String foodDescribe;
+    private String foodTag;
+    private String foodStar;
 
     private List<FoodOption> foodOptions;
     @JsonIgnore
@@ -31,6 +33,8 @@ public class FoodDTO {
         this.foodOptions = food.getFoodOptions();
         this.foodDiscountCodes = food.getFoodDiscountCodes();
         this.foodReviews = food.getFoodReviews();
+        this.foodTag = food.getFoodTag();
+        this.foodStar = food.getFoodStar();
     }
 
     public FoodDTO() {
@@ -106,6 +110,22 @@ public class FoodDTO {
 
     public void setFoodDiscountCodes(List<FoodDiscountCode> foodDiscountCodes) {
         this.foodDiscountCodes = foodDiscountCodes;
+    }
+
+    public String getFoodTag() {
+        return foodTag;
+    }
+
+    public void setFoodTag(String foodTag) {
+        this.foodTag = foodTag;
+    }
+
+    public String getFoodStar() {
+        return foodStar;
+    }
+
+    public void setFoodStar(String foodStar) {
+        this.foodStar = foodStar;
     }
 
     public List<FoodReviews> getFoodReviews() {

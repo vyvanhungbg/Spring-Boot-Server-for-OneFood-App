@@ -17,6 +17,8 @@ public class Food {
     private long idStore;
     @NotNull(message = "This field can not be null")
     private long idTypeOfFood;
+
+    private long idFlashSale;
     @NotNull(message = "This field can not be null")
     private String foodName;
     @NotNull(message = "This field can not be null")
@@ -25,7 +27,8 @@ public class Food {
     private String foodPrice;
 
     private String foodDescribe;
-
+    private String foodTag;
+    private String foodStar;
 
 
     @OneToMany(targetEntity = FoodOption.class)
@@ -46,14 +49,16 @@ public class Food {
     private List<FoodReviews> foodReviews;
 
 
-
-    public Food(long idStore, long idTypeOfFood, String foodName, String foodImage, String foodPrice, String foodDescribe, List<FoodOption> foodOptions, List<FoodDiscountCode> foodDiscountCodes, List<Cart> carts, List<FoodReviews> foodReviews) {
+    public Food(long idStore, long idTypeOfFood, long idFlashSale, String foodName, String foodImage, String foodPrice, String foodDescribe, String foodTag, String foodStar, List<FoodOption> foodOptions, List<FoodDiscountCode> foodDiscountCodes, List<Cart> carts, List<FoodReviews> foodReviews) {
         this.idStore = idStore;
         this.idTypeOfFood = idTypeOfFood;
+        this.idFlashSale = idFlashSale;
         this.foodName = foodName;
         this.foodImage = foodImage;
         this.foodPrice = foodPrice;
         this.foodDescribe = foodDescribe;
+        this.foodTag = foodTag;
+        this.foodStar = foodStar;
         this.foodOptions = foodOptions;
         this.foodDiscountCodes = foodDiscountCodes;
         this.carts = carts;
@@ -61,6 +66,30 @@ public class Food {
     }
 
     public Food() {
+    }
+
+    public long getIdFlashSale() {
+        return idFlashSale;
+    }
+
+    public void setIdFlashSale(long idFlashSale) {
+        this.idFlashSale = idFlashSale;
+    }
+
+    public String getFoodStar() {
+        return foodStar;
+    }
+
+    public void setFoodStar(String foodStar) {
+        this.foodStar = foodStar;
+    }
+
+    public String getFoodTag() {
+        return foodTag;
+    }
+
+    public void setFoodTag(String foodTag) {
+        this.foodTag = foodTag;
     }
 
     public long getIdFood() {

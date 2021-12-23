@@ -27,16 +27,22 @@ public class FoodService {
         this.foodRepository = foodRepository;
     }
 
-    public ResponseEntity<ResponseObject> getAllFood(boolean sorted,int limit){
+    public ResponseEntity<ResponseObject> getAllFood(boolean sorted,int limit, float star){
         List<Food> foods =  foodRepository.findAll();
         //List<FoodDTO> foodDTOs = new ArrayList<>();
         //foods.stream().forEach(food -> foodDTOs.add(new FoodDTO(food)));
 
         List<FoodDTO> foodDTOs = foods.stream().map(food -> new FoodDTO(food)).collect(Collectors.toList());
-        if(sorted)
-            foodDTOs = foodDTOs.stream().sorted(Comparator.comparingDouble(value -> Double.parseDouble(value.getFoodPrice()))).collect(Collectors.toList());
-        if(limit>=0)
-            foodDTOs = foodDTOs.stream().limit(limit).collect(Collectors.toList());
+       try {
+           if(star>0)
+               foodDTOs = foodDTOs.stream().filter(foodDTO -> Double.parseDouble(foodDTO.getFoodStar()) >= star).collect(Collectors.toList());
+           if(sorted)
+               foodDTOs = foodDTOs.stream().sorted(Comparator.comparingDouble(value -> Double.parseDouble(value.getFoodPrice()))).collect(Collectors.toList());
+           if(limit>=0)
+               foodDTOs = foodDTOs.stream().limit(limit).collect(Collectors.toList());
+       }catch (Exception e){
+           return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Can not filter with request param  ", null));
+       }
 
         if(foods.isEmpty())
             return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty food list ", foodDTOs));
