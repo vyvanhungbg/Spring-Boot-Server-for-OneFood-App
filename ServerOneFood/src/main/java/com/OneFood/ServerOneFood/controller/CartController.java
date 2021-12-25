@@ -30,8 +30,8 @@ public class CartController {
     }
 
     @GetMapping("")
-    ResponseEntity<ResponseObject> getAllTypeOfDiscountCode(){
-        return cartService.getAllCart();
+    ResponseEntity<ResponseObject> getAllCart() throws ErrorAccessDeniedException, ErrorNotFoundException {
+            return cartService.getAllFoodInCart();
     }
 
     @GetMapping("/{id}")
@@ -39,6 +39,13 @@ public class CartController {
     public ResponseEntity<ResponseObject> getCartById(@PathVariable Long id) throws ErrorNotFoundException, ErrorAccessDeniedException {
         return cartService.getCartById(id);
     }
+
+
+    @PostMapping("/update-amount")
+    ResponseEntity<ResponseObject> changeAmountFoodInCart(@RequestParam(value = "idFood", defaultValue = "-1") long idFood, @RequestParam(value = "amount", defaultValue = "-1") int amount) throws ErrorAccessDeniedException, ErrorNotFoundException, ErrorExecutionFailedException {
+        return cartService.changeAmountFoodInCart(idFood,amount);
+    }
+
 
     @PostMapping("")
     ResponseEntity<ResponseObject> addNewTypeOfDiscount(@Valid @RequestBody Cart user) throws ErrorExecutionFailedException {

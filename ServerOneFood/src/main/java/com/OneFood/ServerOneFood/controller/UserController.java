@@ -29,12 +29,12 @@ public class UserController {
 
     @GetMapping("")
     @PreAuthorize("hasAuthority('ADMIN')")
-    ResponseEntity<ResponseObject> getAllTypeOfDiscountCode(){
+    ResponseEntity<ResponseObject> getAllUser(){
         return userService.getAllUser();
     }
 
     @PostMapping("")
-    ResponseEntity<ResponseObject> addNewTypeOfDiscount(@Valid  @RequestBody User user) throws ErrorExecutionFailedException {
+    ResponseEntity<ResponseObject> addNewUser(@Valid  @RequestBody User user) throws ErrorExecutionFailedException {
         user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
         return userService.addNewUser(user);
     }

@@ -22,6 +22,19 @@ public class FoodDTO {
     @JsonIgnore
     private List<FoodReviews> foodReviews;
 
+
+    public FoodDTO(long idFood, long idStore, long idTypeOfFood, String foodName, String foodImage, String foodPrice, String foodDescribe, String foodTag, String foodStar) {
+        this.idFood = idFood;
+        this.idStore = idStore;
+        this.idTypeOfFood = idTypeOfFood;
+        this.foodName = foodName;
+        this.foodImage = foodImage;
+        this.foodPrice = foodPrice;
+        this.foodDescribe = foodDescribe;
+        this.foodTag = foodTag;
+        this.foodStar = foodStar;
+    }
+
     public FoodDTO(Food food) {
         this.idFood = food.getIdFood();
         this.idStore = food.getIdStore();
