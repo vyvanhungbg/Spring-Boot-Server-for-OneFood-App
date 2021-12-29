@@ -1,11 +1,17 @@
 package com.OneFood.ServerOneFood.service;
 
+import com.OneFood.ServerOneFood.DTO.BillDTO;
+import com.OneFood.ServerOneFood.DTO.FoodDTO;
+import com.OneFood.ServerOneFood.DTO.FoodInBillDTO;
 import com.OneFood.ServerOneFood.exception.ErrorAccessDeniedException;
 import com.OneFood.ServerOneFood.exception.ErrorExecutionFailedException;
 import com.OneFood.ServerOneFood.exception.ErrorNotFoundException;
 import com.OneFood.ServerOneFood.model.Bill;
+import com.OneFood.ServerOneFood.model.Food;
+import com.OneFood.ServerOneFood.model.OrderFoodDetails;
 import com.OneFood.ServerOneFood.model.ResponseObject;
 import com.OneFood.ServerOneFood.reponsitory.BillRepository;
+import com.OneFood.ServerOneFood.reponsitory.FoodRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,24 +26,34 @@ import java.util.stream.Collectors;
 public class BillService {
     @Autowired
     private final BillRepository billRepository;
+    private final FoodRepository foodRepository;
 
     @Autowired
     private final MyService myService;
-    public BillService(BillRepository billRepository, MyService myService) {
+    public BillService(BillRepository billRepository, FoodRepository foodRepository, MyService myService) {
         this.billRepository = billRepository;
+        this.foodRepository = foodRepository;
         this.myService = myService;
     }
 
 
     public ResponseEntity<ResponseObject> getAllBill(){
-        List<Bill> bills =  billRepository.findAll();
+        Long idUser = myService.getPrincipal();
+        List<Bill> bills =  billRepository.findAllByIdUser(idUser);
         if(bills.isEmpty())
             return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty bill list ", bills));
-        List<Bill> billFilter = new ArrayList<>(bills);
-        Long idUser = myService.getPrincipal();
-        if(!myService.isRoleAdmin())
-             billFilter = bills.stream().filter(bill -> bill.getIdUser() == idUser).collect(Collectors.toList());
-        return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Find "+billFilter.size()+" bill successful ", billFilter));
+        List<BillDTO> list = bills.stream().map(bill -> {
+            List<OrderFoodDetails> orderFoodDetails = bill.getOrderFoodDetails();
+            List<FoodInBillDTO> foodInBillDTOS = new ArrayList<>();
+            if(orderFoodDetails!=null){
+                foodInBillDTOS = orderFoodDetails.stream().map(orderFoodDetails1 -> {
+                   FoodDTO foodDTO = foodRepository.getFoodDTOByID(orderFoodDetails1.getIdFood()).orElse(new FoodDTO());
+                    return new FoodInBillDTO(foodDTO,orderFoodDetails1.getNumberOfFood(), orderFoodDetails1.getFoodPrice());
+                }).collect(Collectors.toList());
+            }
+            return new BillDTO(bill, foodInBillDTOS);
+        }).collect(Collectors.toList());
+        return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Find "+list.size()+" bill successful ", list));
 
     }
 

@@ -7,7 +7,7 @@ import java.util.List;
 
 public class BillDTO {
     private long idBill;
-    public long idUser;
+    private long idUser;
     private long idStore;
 
     private long idLocationOfUser;
@@ -26,12 +26,9 @@ public class BillDTO {
     private String billTimeDone;
     private String billTimeDestroy;
     private String billNote;
-    private List<OrderFoodDetails> orderFoodDetails;
+    private List<FoodInBillDTO> foods;
 
-    public BillDTO() {
-    }
-
-    public BillDTO(Bill bill) {
+    public BillDTO(Bill bill, List<FoodInBillDTO> foods) {
         this.idBill = bill.getIdBill();
         this.idUser = bill.getIdUser();
         this.idStore = bill.getIdStore();
@@ -48,7 +45,10 @@ public class BillDTO {
         this.billTimeDone = bill.getBillTimeDone();
         this.billTimeDestroy = bill.getBillTimeDestroy();
         this.billNote = bill.getBillNote();
-        this.orderFoodDetails = bill.getOrderFoodDetails();
+        this.foods = foods;
+    }
+
+    public BillDTO() {
     }
 
     public long getIdBill() {
@@ -179,11 +179,11 @@ public class BillDTO {
         this.billNote = billNote;
     }
 
-    public List<OrderFoodDetails> getOrderFoodDetails() {
-        return orderFoodDetails;
+    public List<FoodInBillDTO> getFoods() {
+        return foods;
     }
 
-    public void setOrderFoodDetails(List<OrderFoodDetails> orderFoodDetails) {
-        this.orderFoodDetails = orderFoodDetails;
+    public void setFoods(List<FoodInBillDTO> foods) {
+        this.foods = foods;
     }
 }

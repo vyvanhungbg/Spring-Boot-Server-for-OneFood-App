@@ -1,6 +1,7 @@
 package com.OneFood.ServerOneFood.service;
 
 import com.OneFood.ServerOneFood.DTO.FoodDTO;
+import com.OneFood.ServerOneFood.DTO.ItemInCartDTO;
 import com.OneFood.ServerOneFood.exception.ErrorAccessDeniedException;
 import com.OneFood.ServerOneFood.exception.ErrorExecutionFailedException;
 import com.OneFood.ServerOneFood.exception.ErrorNotFoundException;
@@ -45,7 +46,7 @@ public class CartService {
 
         Long idUser = myService.getPrincipal();
         if(idUser == null) throw new ErrorAccessDeniedException("Access is denied");
-        List<FoodDTO> foods =  cartRepository.findAllFoodInCartByIdUser(idUser);
+        List<ItemInCartDTO> foods =  cartRepository.findAllFoodInCartByIdUser(idUser);
         if(foods.isEmpty())
             return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty cart list of user id  "+idUser, foods));
 
@@ -105,6 +106,20 @@ public class CartService {
             response = addNewCart(newCart);
         }
         return response;
+    }
+
+    public ResponseEntity<ResponseObject> changeStatusFoodInCart(Long idFood ,boolean status) throws ErrorAccessDeniedException, ErrorExecutionFailedException, ErrorNotFoundException {
+        if(idFood<=0 ){
+            throw new ErrorExecutionFailedException("Validation erorr, idFood > 0 và amount >=0");
+        }
+        Long idUser = myService.getPrincipal();
+        if(idUser == null) throw new ErrorAccessDeniedException("Access is denied");
+        Cart cart = cartRepository.findByIdUserAndIdFood(idUser,idFood);
+        if(cart == null) throw new ErrorNotFoundException("Can not find cart with id_food = "+idFood);
+        cart.setStatus(status);
+        cartRepository.save(cart);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Update status of food successful ",cart));
+
     }
 
     public ResponseEntity<ResponseObject> getCartById(Long id) throws ErrorNotFoundException, ErrorAccessDeniedException {

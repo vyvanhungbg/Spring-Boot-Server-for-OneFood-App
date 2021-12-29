@@ -23,6 +23,8 @@ public class TypeOfFood {
     private List<Food> foods;
 
     public TypeOfFood() {
+        this.typeOfFoodImage = "";
+        this.typeOfFoodName = "";
     }
 
     public TypeOfFood( String typeOfFoodName, String TypeOfFoodImage, List<Food> foods) {

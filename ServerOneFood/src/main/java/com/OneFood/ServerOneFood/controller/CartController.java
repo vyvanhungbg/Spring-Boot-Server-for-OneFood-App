@@ -46,6 +46,11 @@ public class CartController {
         return cartService.changeAmountFoodInCart(idFood,amount);
     }
 
+    @PostMapping("/update-status")
+    ResponseEntity<ResponseObject> changeStatusFoodInCart(@RequestParam(value = "idFood", defaultValue = "-1") long idFood, @RequestParam(value = "status", defaultValue = "false") boolean status) throws ErrorAccessDeniedException, ErrorNotFoundException, ErrorExecutionFailedException {
+        return cartService.changeStatusFoodInCart(idFood,status);
+    }
+
 
     @PostMapping("")
     ResponseEntity<ResponseObject> addNewTypeOfDiscount(@Valid @RequestBody Cart user) throws ErrorExecutionFailedException {

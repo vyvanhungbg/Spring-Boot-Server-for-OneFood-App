@@ -46,6 +46,8 @@ public class UserService implements UserDetailsService {
     }
 
     public ResponseEntity<ResponseObject> addNewUser(User newUser) throws ErrorExecutionFailedException {
+        User mUser = userRepository.findByUserName(newUser.getUserName());
+        if(mUser !=null) throw new ErrorExecutionFailedException("User name has exits !");
         newUser.setUserMoney("0");
         newUser.setEnable(true);
         newUser.addRole(new Role("USER",new ArrayList<>()));
