@@ -61,6 +61,13 @@ public class FoodService {
 
     }
 
+    public ResponseEntity<ResponseObject> updatePriceFoodWhileFlashSaleById(Long id, String newPrice) throws ErrorNotFoundException {
+        Food food = foodRepository.findById(id).orElseThrow(() -> new ErrorNotFoundException("Cannot find food with id "+id));
+        food.setFoodPrice(newPrice);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Update successful food with id "+id,""));
+
+    }
+
 
 
     public ResponseEntity<ResponseObject> deleteFoodById(Long id) throws ErrorNotFoundException, ErrorExecutionFailedException {

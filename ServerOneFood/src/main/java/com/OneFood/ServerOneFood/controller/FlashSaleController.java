@@ -8,12 +8,15 @@ import com.OneFood.ServerOneFood.service.FlashSaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
 
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping("one-app/v1/flash-sale")
+
 public class FlashSaleController {
 
     @Autowired

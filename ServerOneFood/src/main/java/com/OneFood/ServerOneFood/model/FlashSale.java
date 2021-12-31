@@ -1,5 +1,7 @@
 package com.OneFood.ServerOneFood.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -10,6 +12,9 @@ public class FlashSale {
     @GeneratedValue
     private long idFlashSale;
     private String flashSaleLevel;
+
+    //@JsonIgnore
+    private boolean isFlashSale;
 
     @OneToMany(targetEntity = Food.class)
     @JoinColumn(name = "idFlashSale", referencedColumnName = "idFlashSale")
@@ -22,6 +27,16 @@ public class FlashSale {
     }
 
     public FlashSale() {
+    }
+
+    public boolean isFlashSale() {
+        return isFlashSale;
+    }
+
+
+
+    public void setFlashSale(boolean flashSale) {
+        isFlashSale = flashSale;
     }
 
     public long getIdFlashSale() {
