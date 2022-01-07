@@ -17,7 +17,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idUser;
-    @Column(unique = true,nullable = false)
+    @Column(nullable = false)
     @NotNull(message = "This field can not be null")
     private String userName;
     @NotNull(message = "This field can not be null")

@@ -7,6 +7,7 @@ import com.OneFood.ServerOneFood.exception.ErrorNotFoundException;
 import com.OneFood.ServerOneFood.model.*;
 import com.OneFood.ServerOneFood.reponsitory.RoleRepository;
 import com.OneFood.ServerOneFood.reponsitory.UserRepository;
+import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,14 +35,13 @@ public class UserService implements UserDetailsService {
         this.myService = myService;
     }
 
-    public ResponseEntity<ResponseObject> getAllUser(){
-        List<User> users =  userRepository.findAll();
-        List<UserDTO> userDTOS = new ArrayList<>();
-        users.stream().forEach(user -> userDTOS.add(new UserDTO(user)));
-
-        if(users.isEmpty())
-            return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty account list "+ userDTOS.size(), users));
-        return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Find "+userDTOS.size()+" account ", userDTOS));
+    public ResponseEntity<ResponseObject> getInfoUser() throws ErrorAccessDeniedException, ErrorNotFoundException {
+        Long idUser = myService.getPrincipal();
+        if(idUser ==null){
+            throw new ErrorAccessDeniedException("Access is denied");
+        }
+        User user = userRepository.findById(idUser).orElseThrow(() -> new ErrorNotFoundException("Cannot find account with id "));
+        return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Success ", new UserDTO(user)));
 
     }
 
@@ -125,7 +125,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUserName(username);
+        User user = userRepository.findByUserEmail(username);
         if (user == null) {
             throw new UsernameNotFoundException(username.toString());
         }
@@ -139,5 +139,14 @@ public class UserService implements UserDetailsService {
         if(!myService.isRoleAdmin() && user.getIdUser()!= idUser ){
             throw new ErrorAccessDeniedException("Access is denied");
         }
+    }
+
+    public ResponseEntity<ResponseObject> checkPhoneExists(String phoneNumber) {
+        User user = userRepository.findByUserNumberPhone(phoneNumber);
+        if(user == null){
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"This phone number does not exist yet",null));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"This phone number already exists",null));
+
     }
 }

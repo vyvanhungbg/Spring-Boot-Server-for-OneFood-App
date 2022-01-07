@@ -38,7 +38,7 @@ public class LoginController {
        try {
            Authentication authentication = authenticationManager.authenticate(
                    new UsernamePasswordAuthenticationToken(
-                           loginRequest.getUserName(),
+                           loginRequest.getUserEmail(),
                            loginRequest.getUserPassword()
                    )
            );
@@ -53,7 +53,6 @@ public class LoginController {
 
 
     }
-
 
 
 }

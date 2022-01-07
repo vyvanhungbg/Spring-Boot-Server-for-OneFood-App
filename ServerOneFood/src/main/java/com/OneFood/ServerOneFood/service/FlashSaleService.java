@@ -29,7 +29,7 @@ public class FlashSaleService {
     }
 
     public ResponseEntity<ResponseObject> getAllFlashSale(){
-        List<FlashSale> flashSales =  flashSaleRepository.findAll();
+        List<FlashSale> flashSales =  flashSaleRepository.getAllFlashSale();
         if(flashSales.isEmpty())
             return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty flash Sale list ", flashSales));
         List<FlashSaleDTO> list =  flashSales.stream().map(flashSale -> {

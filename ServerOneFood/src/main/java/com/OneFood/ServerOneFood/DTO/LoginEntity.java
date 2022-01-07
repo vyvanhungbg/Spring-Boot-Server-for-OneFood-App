@@ -4,25 +4,25 @@ import javax.persistence.Entity;
 
 
 public class LoginEntity {
-    private String userName;
+    private String userEmail;
     private String userPassword;
     private String role;
 
     public LoginEntity() {
     }
 
-    public LoginEntity(String userName, String userPassword, String role) {
-        this.userName = userName;
+    public LoginEntity(String userEmail, String userPassword, String role) {
+        this.userEmail = userEmail;
         this.userPassword = userPassword;
         this.role = role;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUserEmail() {
+        return userEmail;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 
     public String getUserPassword() {

@@ -28,9 +28,9 @@ public class UserController {
 
 
     @GetMapping("")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    ResponseEntity<ResponseObject> getAllUser(){
-        return userService.getAllUser();
+    @PreAuthorize("isAuthenticated()")
+    ResponseEntity<ResponseObject> getInfoUser() throws ErrorAccessDeniedException, ErrorNotFoundException {
+        return userService.getInfoUser();
     }
 
     @PostMapping("")
@@ -74,4 +74,10 @@ public class UserController {
     public ResponseEntity<ResponseObject> deleteUserById(@PathVariable(value = "id") Long id) throws ErrorAccessDeniedException, ErrorNotFoundException {
         return userService.deleteUserById(id);
     }
+
+    @PostMapping("/check-phone-exists/{phoneNumber}")
+    public ResponseEntity<ResponseObject> checkPhoneExists(@PathVariable(value = "phoneNumber") String phoneNumber){
+        return userService.checkPhoneExists(phoneNumber);
+    }
+
 }
