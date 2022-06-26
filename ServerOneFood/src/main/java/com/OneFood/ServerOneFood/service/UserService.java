@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -50,7 +51,8 @@ public class UserService implements UserDetailsService {
         if(mUser !=null) throw new ErrorExecutionFailedException("User name has exits !");
         newUser.setUserMoney("0");
         newUser.setEnable(true);
-        newUser.addRole(new Role("USER",new ArrayList<>()));
+        Role role = roleRepository.findRoleByRoleName("USER").orElse(new Role("USER", new ArrayList<>()));
+        newUser.addRole(role);
         User user = userRepository.save(newUser);
         if(user == null)
             throw new ErrorExecutionFailedException("New User create failed ");
@@ -96,8 +98,10 @@ public class UserService implements UserDetailsService {
             throw new ErrorExecutionFailedException("User hasn't this role "+newRole);
         try {
             roles.stream().forEach(role -> {
+                System.out.println(role.getIdRole()+"_________________________");
                 if(role.getRoleName().equals(newRole)){
                     user.removeRole(role);
+                   // roleRepository.deleteById(role.getIdRole());
                     return;}
             });
             userRepository.save(user);
@@ -115,12 +119,13 @@ public class UserService implements UserDetailsService {
         if(nameRoles.contains(newRole))
             throw new ErrorExecutionFailedException("User has this role "+newRole);
         try {
-           user.addRole(new Role(newRole, new ArrayList<>()));
+            Role role = roleRepository.findRoleByRoleName(newRole).orElse(new Role(newRole, new ArrayList<>()));
+           user.addRole(role);
            userRepository.save(user);
         }catch (Exception e){
            throw new ErrorExecutionFailedException(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"add role successful for use with id "+id,new UserDTO(user)));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"add role successful for use with id "+id,null));
     }
 
     @Override
@@ -148,5 +153,28 @@ public class UserService implements UserDetailsService {
         }
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"This phone number already exists",null));
 
+    }
+
+    public void updateResetPassword(String token, String email) throws ErrorNotFoundException {
+        User user = userRepository.findByUserEmail(email);
+        if(user != null){
+            user.setResetPasswordToken(token);
+            userRepository.save(user);
+        }else {
+            throw new ErrorNotFoundException("Can not find user with email "+email);
+        }
+    }
+
+    public User getUserByResetPasswordToken(String resetPasswordToken){
+        return  userRepository.findByResetPasswordToken(resetPasswordToken);
+    }
+
+    public void updatePassword(User user, String newPassword){
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        user.setUserPassword(encodedPassword);
+
+        user.setResetPasswordToken(null);
+        userRepository.save(user);
     }
 }

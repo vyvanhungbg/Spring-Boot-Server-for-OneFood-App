@@ -3,6 +3,8 @@
 
 # Log file
 *.log
+# case studio
+*.~m2
 
 # BlueJ files
 *.ctxt

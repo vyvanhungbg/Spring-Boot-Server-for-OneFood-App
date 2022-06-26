@@ -1,7 +1,11 @@
 package com.OneFood.ServerOneFood.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "food_discount_code")
@@ -11,7 +15,6 @@ public class FoodDiscountCode {
     private long idFoodDiscountCode;
     private long idStore;
     @NotNull(message = "This field can not be null")
-    private long idFood;
     private long idTypeOfDiscountCode;
     private int foodDiscountCodeIsDestroy;
     int foodDiscountCodeStatus;
@@ -25,12 +28,15 @@ public class FoodDiscountCode {
     private String foodDiscountCodeByMoney;
     private String foodDiscountCodeByPercent;
 
+    @JsonIgnore
+    @ManyToMany(mappedBy = "foodDiscountCodes", fetch = FetchType.LAZY) //
+    private List<Food> foods = new ArrayList<>();
+
     public FoodDiscountCode() {
     }
 
-    public FoodDiscountCode( long idStore, long idFood, long idTypeOfDiscountCode, int foodDiscountCodeIsDestroy, int foodDiscountCodeStatus, String foodDiscountCodeDescribe, String foodDiscountCodeImage, String foodDiscountEndTime, String foodDiscountStartTime, String foodDiscountCodeByMoney, String foodDiscountCodeByPercent) {
+    public FoodDiscountCode( long idStore,  long idTypeOfDiscountCode, int foodDiscountCodeIsDestroy, int foodDiscountCodeStatus, String foodDiscountCodeDescribe, String foodDiscountCodeImage, String foodDiscountEndTime, String foodDiscountStartTime, String foodDiscountCodeByMoney, String foodDiscountCodeByPercent) {
         this.idStore = idStore;
-        this.idFood = idFood;
         this.idTypeOfDiscountCode = idTypeOfDiscountCode;
         this.foodDiscountCodeIsDestroy = foodDiscountCodeIsDestroy;
         this.foodDiscountCodeStatus = foodDiscountCodeStatus;
@@ -40,6 +46,24 @@ public class FoodDiscountCode {
         this.foodDiscountStartTime = foodDiscountStartTime;
         this.foodDiscountCodeByMoney = foodDiscountCodeByMoney;
         this.foodDiscountCodeByPercent = foodDiscountCodeByPercent;
+    }
+
+    public void addFood(Food food) {
+        foods.add(food);
+        food.getFoodDiscountCodes().add(this);
+    }
+
+    public void removeFood(Food food) {
+        foods.remove(food);
+        food.getFoodDiscountCodes().remove(this);
+    }
+
+    public List<Food> getFoods() {
+        return foods;
+    }
+
+    public void setFoods(List<Food> foods) {
+        this.foods = foods;
     }
 
     public long getIdFoodDiscountCode() {
@@ -58,13 +82,7 @@ public class FoodDiscountCode {
         this.idStore = idStore;
     }
 
-    public long getIdFood() {
-        return idFood;
-    }
 
-    public void setIdFood(long idFood) {
-        this.idFood = idFood;
-    }
 
     public long getIdTypeOfDiscountCode() {
         return idTypeOfDiscountCode;

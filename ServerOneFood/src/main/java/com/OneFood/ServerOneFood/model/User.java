@@ -32,6 +32,7 @@ public class User {
     @Column(unique = true,nullable = false)
     @NotNull(message = "This field can not be null")
     private String userEmail;
+    private String resetPasswordToken;
     private boolean enable;
 
     @OneToMany(targetEntity = Cart.class)
@@ -221,5 +222,13 @@ public class User {
 
     public void setCarts(List<Cart> carts) {
         this.carts = carts;
+    }
+
+    public String getResetPasswordToken() {
+        return resetPasswordToken;
+    }
+
+    public void setResetPasswordToken(String resetPasswordToken) {
+        this.resetPasswordToken = resetPasswordToken;
     }
 }

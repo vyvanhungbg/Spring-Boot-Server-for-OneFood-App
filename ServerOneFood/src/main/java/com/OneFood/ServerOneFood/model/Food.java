@@ -36,8 +36,13 @@ public class Food {
     private List<FoodOption> foodOptions;
 
 
-    @OneToMany(targetEntity = FoodDiscountCode.class)
-    @JoinColumn(name = "idFood", referencedColumnName = "idFood")
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "foods_discounts",
+            joinColumns = @JoinColumn(name = "idFood"),
+            inverseJoinColumns = @JoinColumn(name = "idFoodDiscountCode")
+    )
     private List<FoodDiscountCode> foodDiscountCodes;
 
     @OneToMany(targetEntity = Cart.class)
@@ -47,6 +52,18 @@ public class Food {
     @OneToMany(targetEntity = FoodReviews.class)
     @JoinColumn(name = "idFood", referencedColumnName = "idFood")
     private List<FoodReviews> foodReviews;
+
+
+    public void addDiscount(FoodDiscountCode discountCode) {
+        foodDiscountCodes.add(discountCode);
+        discountCode.getFoods().add(this);
+    }
+
+    public void removeDiscount(FoodDiscountCode discountCode) {
+        foodDiscountCodes.remove(discountCode);
+        discountCode.getFoods().remove(this);
+    }
+
 
 
     public Food(long idStore, long idTypeOfFood, long idFlashSale, String foodName, String foodImage, String foodPrice, String foodDescribe, String foodTag, String foodStar, List<FoodOption> foodOptions, List<FoodDiscountCode> foodDiscountCodes, List<Cart> carts, List<FoodReviews> foodReviews) {

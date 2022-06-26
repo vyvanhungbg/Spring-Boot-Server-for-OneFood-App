@@ -4,9 +4,11 @@ import com.OneFood.ServerOneFood.DTO.LoginEntity;
 import com.OneFood.ServerOneFood.JWT.JwtTokenProvider;
 import com.OneFood.ServerOneFood.model.CustomUserDetails;
 import com.OneFood.ServerOneFood.model.ResponseObject;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -53,6 +55,14 @@ public class LoginController {
 
 
     }
+
+    @GetMapping("/check_login")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ResponseObject> checkJwtLive(){
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Token is good ", null));
+    }
+
+
 
 
 }

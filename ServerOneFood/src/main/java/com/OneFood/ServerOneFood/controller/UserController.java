@@ -6,13 +6,25 @@ import com.OneFood.ServerOneFood.exception.ErrorNotFoundException;
 import com.OneFood.ServerOneFood.model.ResponseObject;
 import com.OneFood.ServerOneFood.model.User;
 import com.OneFood.ServerOneFood.service.UserService;
+import com.sun.mail.smtp.SMTPAddressFailedException;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMailMessage;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
 
 @RestController
 @RequestMapping("one-app/v1/user")
@@ -21,6 +33,9 @@ public class UserController {
     private final UserService userService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -79,5 +94,8 @@ public class UserController {
     public ResponseEntity<ResponseObject> checkPhoneExists(@PathVariable(value = "phoneNumber") String phoneNumber){
         return userService.checkPhoneExists(phoneNumber);
     }
+
+
+
 
 }
