@@ -7,28 +7,40 @@ import com.OneFood.ServerOneFood.exception.ErrorNotFoundException;
 import com.OneFood.ServerOneFood.model.*;
 import com.OneFood.ServerOneFood.reponsitory.RoleRepository;
 import com.OneFood.ServerOneFood.reponsitory.UserRepository;
+import net.bytebuddy.utility.RandomString;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
+
+    private final static int LENGTH_STRING_RANDOM = 6;
     @Autowired
     private final UserRepository userRepository;
     @Autowired
     private final RoleRepository roleRepository;
     @Autowired
     private final MyService myService;
+    @Autowired
+    private JavaMailSender mailSender;
 
     public UserService(UserRepository userRepository, RoleRepository roleRepository, MyService myService) {
         this.userRepository = userRepository;
@@ -47,9 +59,15 @@ public class UserService implements UserDetailsService {
     }
 
     public ResponseEntity<ResponseObject> addNewUser(User newUser) throws ErrorExecutionFailedException {
-        User mUser = userRepository.findByUserName(newUser.getUserName());
-        if(mUser !=null) throw new ErrorExecutionFailedException("User name has exits !");
+        User mUser = userRepository.findByUserEmail(newUser.getUserEmail());
+        if(mUser !=null && mUser.isConfirmEmail()) throw new ErrorExecutionFailedException("Email has exits !");
+
+        if(mUser !=null && !mUser.isConfirmEmail()){
+            mUser.setUserPassword(newUser.getUserPassword());
+            mUser.setUserName(newUser.getUserName());
+        }
         newUser.setUserMoney("0");
+        newUser.setConfirmEmail(false);
         newUser.setEnable(true);
         Role role = roleRepository.findRoleByRoleName("USER").orElse(new Role("USER", new ArrayList<>()));
         newUser.addRole(role);
@@ -58,6 +76,36 @@ public class UserService implements UserDetailsService {
             throw new ErrorExecutionFailedException("New User create failed ");
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"New User successfully created ",new UserDTO(user)));
 
+    }
+
+    public ResponseEntity<ResponseObject> confirmEmail(String email, String otp) throws ErrorNotFoundException {
+        User mUser = userRepository.findByUserEmail(email);
+        if(mUser == null) throw new ErrorNotFoundException("Can not find user with email "+email);
+
+
+        if(mUser.isConfirmEmail()){
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"Email has been confirmed ","Email đã được xác nhận "));
+
+        }
+
+        if(!mUser.isOTPRequired()){
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"Confirmation request failed ","Mã OTP hết hạn !"));
+
+        }
+
+
+        String otpOfUser = mUser.getOneTimePassword();
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+
+        if(! passwordEncoder.matches(otp,otpOfUser))
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"Confirmation request failed ","Mã xác nhận không đúng !"));
+
+
+        mUser.setConfirmEmail(true);
+        userRepository.save(mUser);
+        clearOTP(mUser);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Confirm email success ","Email được xác nhận thành công !"));
     }
 
     public ResponseEntity<ResponseObject> updateUserById(Long id, User newUser) throws ErrorNotFoundException, ErrorExecutionFailedException, ErrorAccessDeniedException {
@@ -175,6 +223,69 @@ public class UserService implements UserDetailsService {
         user.setUserPassword(encodedPassword);
 
         user.setResetPasswordToken(null);
+        userRepository.save(user);
+    }
+
+    // otp
+    public ResponseEntity<ResponseObject> generateOneTimePassword(String email) throws ErrorExecutionFailedException, ErrorNotFoundException {
+        if(email.equals(""))
+            throw new ErrorNotFoundException("Email is null ");
+        User usertmp = userRepository.findByUserEmail(email);
+        if(usertmp == null)
+            throw new ErrorNotFoundException("Can not find user with email "+email);
+        if(usertmp.isOTPRequired()){
+            throw new ErrorNotFoundException("OTP is sending wait a minute "+email);
+        }
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String OTP = RandomStringUtils.randomNumeric(LENGTH_STRING_RANDOM);
+
+        String encodedOTP = passwordEncoder.encode(OTP);
+
+
+        usertmp.setOneTimePassword(encodedOTP);
+        usertmp.setOtpRequestedTime(new Date());
+
+        userRepository.save(usertmp);
+
+        User user = userRepository.findByUserEmail(email);
+
+        try {
+            sendOTPEmail(user, OTP);
+            return   ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"OTP has been sent",null));
+        }catch (MessagingException e){
+            throw new ErrorExecutionFailedException("This email cannot receive messages : "+email);
+        }
+        catch (Exception e) {
+            throw new ErrorExecutionFailedException("Cannot send email");
+        }
+    }
+
+    public void sendOTPEmail(User user, String OTP) throws MessagingException, UnsupportedEncodingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        helper.setFrom("onefoodteam@gmail.com", "Onefood Support");
+        helper.setTo(user.getUserEmail());
+
+        String subject = "Here's your One Time Password (OTP) - Expire in 5 minutes!";
+
+        String content = "<p>Hello " + user.getUserName() + "</p>"
+                + "<p>For security reason, you're required to use the following "
+                + "One Time Password to login:</p>"
+                + "<p><b>" + OTP + "</b></p>"
+                + "<br>"
+                + "<p>Note: this OTP is set to expire in 5 minutes.</p>";
+
+        helper.setSubject(subject);
+
+        helper.setText(content, true);
+
+        mailSender.send(message);
+    }
+
+    public void clearOTP(User user) {
+        user.setOneTimePassword(null);
+        user.setOtpRequestedTime(null);
         userRepository.save(user);
     }
 }

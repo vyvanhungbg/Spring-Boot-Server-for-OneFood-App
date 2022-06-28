@@ -18,6 +18,8 @@ public class UserDTO {
     private String userNumberPhone;
     private String userEmail;
 
+    private boolean confirmEmail;
+
     private List<Cart> carts;
 
     private List<FoodReviews> foodReviews;
@@ -44,6 +46,7 @@ public class UserDTO {
         this.notifications = user.getNotifications();
         this.bills = user.getBills();
         this.roles = getRoles(user);
+        this.confirmEmail = user.isConfirmEmail();
     }
     public Set<String> getRoles(User user){
         List<String> strings = new ArrayList<>();
@@ -54,6 +57,15 @@ public class UserDTO {
     }
 
     public UserDTO() {
+    }
+
+
+    public boolean isConfirmEmail() {
+        return confirmEmail;
+    }
+
+    public void setConfirmEmail(boolean confirmEmail) {
+        this.confirmEmail = confirmEmail;
     }
 
     public long getIdUser() {

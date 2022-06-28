@@ -39,11 +39,18 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
+        if(!user.isConfirmEmail()){
+            return "";
+        }
+        if (user.isOTPRequired()) {
+            return user.getOneTimePassword();
+        }
         return user.getUserPassword();
     }
 
     @Override
     public String getUsername() {
+
         return user.getUserEmail();
     }
 

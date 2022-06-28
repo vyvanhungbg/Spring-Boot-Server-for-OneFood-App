@@ -96,6 +96,15 @@ public class UserController {
     }
 
 
+    @PostMapping("/generate_otp")
+    public ResponseEntity<ResponseObject> generateOTP(@RequestParam(value = "email",defaultValue = "") String email) throws ErrorExecutionFailedException, ErrorNotFoundException {
+         return userService.generateOneTimePassword(email);
 
+    }
+
+    @PostMapping("/confirm_email")
+    public ResponseEntity<ResponseObject> ConfirmEmail(@RequestParam(value = "email",defaultValue = "") String email, @RequestParam(value = "otp",defaultValue = "") String otp) throws ErrorNotFoundException {
+        return userService.confirmEmail(email,otp);
+    }
 
 }

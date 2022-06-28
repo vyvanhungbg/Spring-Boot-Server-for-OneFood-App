@@ -3,9 +3,11 @@ package com.OneFood.ServerOneFood.model;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,9 +33,61 @@ public class User {
     private String userNumberPhone;
     @Column(unique = true,nullable = false)
     @NotNull(message = "This field can not be null")
+
     private String userEmail;
     private String resetPasswordToken;
+
+
+    private static final   long OTP_VALID_DURATION  = 60*1000;
+    private String oneTimePassword;
+    private Date otpRequestedTime;
+
+    private boolean confirmEmail = false;
     private boolean enable;
+
+
+    public boolean isConfirmEmail() {
+        return confirmEmail;
+    }
+
+    public void setConfirmEmail(boolean confirmEmail) {
+        this.confirmEmail = confirmEmail;
+    }
+
+    public String getOneTimePassword() {
+        return oneTimePassword;
+    }
+
+    public boolean isOTPRequired() {
+        if (this.getOneTimePassword() == null) {
+            System.err.println("OTP not use");
+            return false;
+        }
+
+        long currentTimeInMillis = System.currentTimeMillis();
+        long otpRequestedTimeInMillis = this.otpRequestedTime.getTime();
+
+        if (otpRequestedTimeInMillis + OTP_VALID_DURATION < currentTimeInMillis) {
+            // OTP expires
+            System.err.println("OTP expries");
+            System.err.println(otpRequestedTimeInMillis +" + "+OTP_VALID_DURATION+" + < "+currentTimeInMillis);
+            return false;
+        }
+
+        return true;
+    }
+
+    public void setOneTimePassword(String oneTimePassword) {
+        this.oneTimePassword = oneTimePassword;
+    }
+
+    public Date getOtpRequestedTime() {
+        return otpRequestedTime;
+    }
+
+    public void setOtpRequestedTime(Date otpRequestedTime) {
+        this.otpRequestedTime = otpRequestedTime;
+    }
 
     @OneToMany(targetEntity = Cart.class)
     @JoinColumn(name = "idUser", referencedColumnName = "idUser")

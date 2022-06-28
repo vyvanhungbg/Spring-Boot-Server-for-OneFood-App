@@ -4,6 +4,8 @@ import com.OneFood.ServerOneFood.DTO.LoginEntity;
 import com.OneFood.ServerOneFood.JWT.JwtTokenProvider;
 import com.OneFood.ServerOneFood.model.CustomUserDetails;
 import com.OneFood.ServerOneFood.model.ResponseObject;
+import com.OneFood.ServerOneFood.model.User;
+import com.OneFood.ServerOneFood.service.UserService;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,9 @@ public class LoginController {
 
     @Autowired
     AuthenticationManager authenticationManager;
+
+    @Autowired
+    UserService userService;
 
     @Autowired
     private JwtTokenProvider tokenProvider;
@@ -46,10 +51,19 @@ public class LoginController {
            );
            SecurityContextHolder.getContext().setAuthentication(authentication);
            String jwt = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
+           CustomUserDetails customerDetails
+                   = (CustomUserDetails) authentication.getPrincipal();
+
+           User customer = customerDetails.getUser();
+
+           if (customer.isOTPRequired()) {
+               userService.clearOTP(customer);
+           }
            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Successful ", jwt));
 
        }catch (BadCredentialsException e){
-           e.printStackTrace();
+          // e.printStackTrace();
+           System.err.println("Login Failed .Incorrect password");
            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"Incorrect account or password  ", null));
        }
 
