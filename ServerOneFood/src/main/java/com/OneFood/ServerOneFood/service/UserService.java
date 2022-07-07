@@ -53,43 +53,49 @@ public class UserService implements UserDetailsService {
         if(idUser ==null){
             throw new ErrorAccessDeniedException("Access is denied");
         }
-        User user = userRepository.findById(idUser).orElseThrow(() -> new ErrorNotFoundException("Cannot find account with id "));
+        User user = userRepository.findById(idUser).orElseThrow(() -> new ErrorNotFoundException("Không tìm thấy tài khoản này "));
         return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Success ", new UserDTO(user)));
 
     }
 
-    public ResponseEntity<ResponseObject> addNewUser(User newUser) throws ErrorExecutionFailedException {
+    public ResponseEntity<ResponseObject> addNewUser(User newUser)  {
         User mUser = userRepository.findByUserEmail(newUser.getUserEmail());
-        if(mUser !=null && mUser.isConfirmEmail()) throw new ErrorExecutionFailedException("Email has exits !");
+        if(mUser !=null && mUser.isConfirmEmail())   return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"Email này đã tồn tại ! ",new UserDTO(mUser)));
+        ;
 
         if(mUser !=null && !mUser.isConfirmEmail()){
             mUser.setUserPassword(newUser.getUserPassword());
             mUser.setUserName(newUser.getUserName());
-        }
-        newUser.setUserMoney("0");
-        newUser.setConfirmEmail(false);
-        newUser.setEnable(true);
-        Role role = roleRepository.findRoleByRoleName("USER").orElse(new Role("USER", new ArrayList<>()));
-        newUser.addRole(role);
-        User user = userRepository.save(newUser);
-        if(user == null)
-            throw new ErrorExecutionFailedException("New User create failed ");
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"New User successfully created ",new UserDTO(user)));
 
+            userRepository.save(mUser);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Đăng kí thành công ",new UserDTO(mUser)));
+
+        }
+        else{
+            newUser.setUserMoney("0");
+            newUser.setConfirmEmail(false);
+            newUser.setEnable(true);
+            Role role = roleRepository.findRoleByRoleName("USER").orElse(new Role("USER", new ArrayList<>()));
+            newUser.addRole(role);
+            User user = userRepository.save(newUser);
+
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Đăng kí thành công ",new UserDTO(user)));
+
+        }
     }
 
     public ResponseEntity<ResponseObject> confirmEmail(String email, String otp) throws ErrorNotFoundException {
         User mUser = userRepository.findByUserEmail(email);
-        if(mUser == null) throw new ErrorNotFoundException("Can not find user with email "+email);
+        if(mUser == null) throw new ErrorNotFoundException("Không tìm thấy tài khoản với email  "+email);
 
 
         if(mUser.isConfirmEmail()){
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"Email has been confirmed ","Email đã được xác nhận "));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"Email đã được xác nhận rồi  ",null));
 
         }
 
         if(!mUser.isOTPRequired()){
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"Confirmation request failed ","Mã OTP hết hạn !"));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"Mã OTP hết hạn !",null));
 
         }
 
@@ -99,13 +105,13 @@ public class UserService implements UserDetailsService {
 
 
         if(! passwordEncoder.matches(otp,otpOfUser))
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"Confirmation request failed ","Mã xác nhận không đúng !"));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"Mã xác nhận không đúng !",null));
 
 
         mUser.setConfirmEmail(true);
         userRepository.save(mUser);
         clearOTP(mUser);
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Confirm email success ","Email được xác nhận thành công !"));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Email được xác nhận thành công !",null));
     }
 
     public ResponseEntity<ResponseObject> updateUserById(Long id, User newUser) throws ErrorNotFoundException, ErrorExecutionFailedException, ErrorAccessDeniedException {
@@ -232,9 +238,9 @@ public class UserService implements UserDetailsService {
             throw new ErrorNotFoundException("Email is null ");
         User usertmp = userRepository.findByUserEmail(email);
         if(usertmp == null)
-            throw new ErrorNotFoundException("Can not find user with email "+email);
+            throw new ErrorNotFoundException("Không tìm thấy tài khoản với email "+email);
         if(usertmp.isOTPRequired()){
-            throw new ErrorNotFoundException("OTP is sending wait a minute "+email);
+            throw new ErrorNotFoundException("Mã OTP đã được gửi vui lòng đợi ít phút ");
         }
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String OTP = RandomStringUtils.randomNumeric(LENGTH_STRING_RANDOM);
@@ -251,12 +257,12 @@ public class UserService implements UserDetailsService {
 
         try {
             sendOTPEmail(user, OTP);
-            return   ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"OTP has been sent",null));
+            return   ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"OTP đã được gửi đi kiểm tra email",null));
         }catch (MessagingException e){
-            throw new ErrorExecutionFailedException("This email cannot receive messages : "+email);
+            throw new ErrorExecutionFailedException("Không thể gửi OTP tới email này ");
         }
         catch (Exception e) {
-            throw new ErrorExecutionFailedException("Cannot send email");
+            throw new ErrorExecutionFailedException("Gửi OTP thất bại ! ");
         }
     }
 
@@ -267,14 +273,14 @@ public class UserService implements UserDetailsService {
         helper.setFrom("onefoodteam@gmail.com", "Onefood Support");
         helper.setTo(user.getUserEmail());
 
-        String subject = "Here's your One Time Password (OTP) - Expire in 5 minutes!";
+        String subject = "Here's your One Time Password (OTP) - Expire in 1 minutes!";
 
         String content = "<p>Hello " + user.getUserName() + "</p>"
                 + "<p>For security reason, you're required to use the following "
                 + "One Time Password to login:</p>"
                 + "<p><b>" + OTP + "</b></p>"
                 + "<br>"
-                + "<p>Note: this OTP is set to expire in 5 minutes.</p>";
+                + "<p>Note: this OTP is set to expire in 1 minutes.</p>";
 
         helper.setSubject(subject);
 
@@ -286,6 +292,9 @@ public class UserService implements UserDetailsService {
     public void clearOTP(User user) {
         user.setOneTimePassword(null);
         user.setOtpRequestedTime(null);
+        if(!user.isConfirmEmail()){
+            user.setConfirmEmail(true);
+        }
         userRepository.save(user);
     }
 }

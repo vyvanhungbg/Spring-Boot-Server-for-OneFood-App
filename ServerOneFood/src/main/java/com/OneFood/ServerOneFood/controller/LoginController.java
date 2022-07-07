@@ -5,6 +5,7 @@ import com.OneFood.ServerOneFood.JWT.JwtTokenProvider;
 import com.OneFood.ServerOneFood.model.CustomUserDetails;
 import com.OneFood.ServerOneFood.model.ResponseObject;
 import com.OneFood.ServerOneFood.model.User;
+import com.OneFood.ServerOneFood.reponsitory.UserRepository;
 import com.OneFood.ServerOneFood.service.UserService;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class LoginController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     private JwtTokenProvider tokenProvider;
@@ -58,6 +62,7 @@ public class LoginController {
 
            if (customer.isOTPRequired()) {
                userService.clearOTP(customer);
+
            }
            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Successful ", jwt));
 

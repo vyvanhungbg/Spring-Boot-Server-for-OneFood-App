@@ -22,18 +22,18 @@ public class User {
     @Column(nullable = false)
     @NotNull(message = "This field can not be null")
     private String userName;
+    @Column(nullable = false)
     @NotNull(message = "This field can not be null")
     private String userPassword;
     private String userImage;
     private String userDateOfBirth;
     private String userSex;
     private String userMoney;
-    @Column(unique = true,nullable = false)
-    @NotNull(message = "This field can not be null")
+    @Column(unique = true,nullable = true)
     private String userNumberPhone;
-    @Column(unique = true,nullable = false)
-    @NotNull(message = "This field can not be null")
 
+    @NotNull(message = "This field can not be null")
+    @Column(unique = true,nullable = false)
     private String userEmail;
     private String resetPasswordToken;
 

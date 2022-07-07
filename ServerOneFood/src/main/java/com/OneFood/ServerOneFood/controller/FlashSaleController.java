@@ -28,8 +28,8 @@ public class FlashSaleController {
 
 
     @GetMapping("")
-    ResponseEntity<ResponseObject> getAllFlashSale(){
-        return flashSaleService.getAllFlashSale();
+    ResponseEntity<ResponseObject> getAllFlashSale(@RequestParam(value = "page", defaultValue = "0") int page){
+        return flashSaleService.getAllFlashSale(page);
     }
 
     @PostMapping("")

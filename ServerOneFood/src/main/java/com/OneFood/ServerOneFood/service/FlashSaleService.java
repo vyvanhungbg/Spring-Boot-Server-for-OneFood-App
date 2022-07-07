@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ public class FlashSaleService {
         this.foodRepository = foodRepository;
     }
 
-    public ResponseEntity<ResponseObject> getAllFlashSale(){
+    public ResponseEntity<ResponseObject> getAllFlashSale(int page){
         List<FlashSale> flashSales =  flashSaleRepository.getAllFlashSale();
         if(flashSales.isEmpty())
             return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty flash Sale list ", flashSales));
@@ -39,6 +40,15 @@ public class FlashSaleService {
             }).collect(Collectors.toList());
             return new FlashSaleDTO(flashSale,foodDTOS);
         }).collect(Collectors.toList());
+
+        int PAGE_SIZE = 6;
+        int limitStart = (page-1)*PAGE_SIZE;
+        int limitEnd = (page)*PAGE_SIZE;
+        if(limitStart > list.size())
+            return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"End list", new ArrayList<>()));
+        if(page>0 && limitStart != -1 && limitEnd !=-1 && limitStart<limitEnd)
+            list = list.stream().skip(limitStart).limit(limitEnd-limitStart).collect(Collectors.toList());
+
         return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Find "+list.size()+" flash Sale ", list));
 
     }

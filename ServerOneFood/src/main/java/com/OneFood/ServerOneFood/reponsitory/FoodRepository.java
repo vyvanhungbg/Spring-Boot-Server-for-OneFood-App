@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FoodRepository extends JpaRepository<Food,Long> {
-    @Query("SELECT new com.OneFood.ServerOneFood.DTO.FoodDTO(f,s) FROM Store s  INNER JOIN  s.foods f")
+    @Query("SELECT new com.OneFood.ServerOneFood.DTO.FoodDTO(f,s) FROM Store s  INNER JOIN  s.foods f where f.idFlashSale =1")
     List<FoodDTO> getAllFoodDTO();
 
     @Query("SELECT new com.OneFood.ServerOneFood.DTO.FoodDTO(f,s) FROM Store s  INNER JOIN  s.foods f WHERE f.idFood=:idFood")

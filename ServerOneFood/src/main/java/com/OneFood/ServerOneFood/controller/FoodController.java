@@ -20,8 +20,8 @@ public class FoodController {
         this.foodService = foodService;
     }
     @GetMapping("")
-    ResponseEntity<ResponseObject> getAllFood(@RequestParam(value = "sortedByPrice", defaultValue = "false") boolean sorted,@RequestParam(value = "limitStart", defaultValue = "-1") int limitStart,@RequestParam(value = "limitEnd", defaultValue = "-1") int limitEnd ,@RequestParam(value = "star", defaultValue = "-1") float star){
-        return foodService.getAllFood(sorted, limitStart,limitEnd,star);
+    ResponseEntity<ResponseObject> getAllFood(@RequestParam(value = "sortedByPrice", defaultValue = "false") boolean sorted,@RequestParam(value = "page", defaultValue = "0") int page,@RequestParam(value = "star", defaultValue = "-1") float star) throws ErrorExecutionFailedException {
+        return foodService.getAllFood(sorted,star,page);
     }
 
 

@@ -32,15 +32,19 @@ public class FoodService {
         this.foodDiscountCodeRepository = foodDiscountCodeRepository;
     }
 
-    public ResponseEntity<ResponseObject> getAllFood(boolean sorted, int limitStart, int limitEnd,float star){
+    public ResponseEntity<ResponseObject> getAllFood(boolean sorted, float star, int page) throws ErrorExecutionFailedException {
         List<FoodDTO> foods =  foodRepository.getAllFoodDTO();
         if(foods.isEmpty())
             return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty food list ", foods));
         List<FoodDTO> foodDTOS = new ArrayList<>(foods);
         if(star!=-1)
             foodDTOS = foods.stream().filter(foodDTO -> Double.parseDouble(foodDTO.getFoodStar())>star).collect(Collectors.toList());
-
-        if(limitStart != -1 && limitEnd !=-1 && limitStart<limitEnd)
+        int PAGE_SIZE = 4;
+        int limitStart = (page-1)*PAGE_SIZE;
+        int limitEnd = (page)*PAGE_SIZE;
+        if(limitStart > foods.size())
+            return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"End list", new ArrayList<>()));
+        if(page>0 && limitStart != -1 && limitEnd !=-1 && limitStart<limitEnd)
             foodDTOS = foods.stream().skip(limitStart).limit(limitEnd-limitStart).collect(Collectors.toList());
         if(sorted)
             foodDTOS = foodDTOS.stream().sorted((o1, o2) -> Double.parseDouble(o1.getFoodPrice()) > Double.parseDouble(o2.getFoodPrice())?1:0).collect(Collectors.toList());
