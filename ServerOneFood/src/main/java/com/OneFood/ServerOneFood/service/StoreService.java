@@ -10,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StoreService {
@@ -28,10 +30,19 @@ public class StoreService {
         return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"New store save successful ! id: ", store));
     }
 
-    public ResponseEntity<ResponseObject>  getAllStore(){
+    public ResponseEntity<ResponseObject>  getAllStore(int page){
         List<Store> stores =  storeRepository.findAll();
         if(stores.isEmpty())
-            return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty store list ", stores));
+            return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"Empty store list ", stores));
+
+        int PAGE_SIZE = 4;
+        int limitStart = (page-1)*PAGE_SIZE;
+        int limitEnd = (page)*PAGE_SIZE;
+        if(limitStart > stores.size())
+            return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"End list", new ArrayList<>()));
+        if(page>0 && limitStart != -1 && limitEnd !=-1 && limitStart<limitEnd)
+            stores = stores.stream().skip(limitStart).limit(limitEnd-limitStart).collect(Collectors.toList());
+
         return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Find "+stores.size()+" stores ", stores));
     }
     public ResponseEntity<ResponseObject> getStoreById(Long id) throws ErrorNotFoundException {

@@ -23,7 +23,18 @@ public class NotificationService {
 
     @Autowired
     private final MyService myService;
+
+
+    public static INotificationListener listener;
+
+    public interface INotificationListener{
+        void update(Notification notification);
+        void create(Notification notification);
+        void delete(Notification notification);
+    }
+
     public NotificationService(NotificationRepository notificationRepository, MyService myService) {
+
         this.notificationRepository = notificationRepository;
         this.myService = myService;
     }
@@ -47,6 +58,11 @@ public class NotificationService {
         Notification notification = notificationRepository.save(newNotification);
         if(notification == null)
             throw new ErrorExecutionFailedException("New notification create failed ");
+        try{
+            listener.create(notification);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"New notification successfully created ",notification));
 
     }
@@ -62,8 +78,14 @@ public class NotificationService {
        notification.setNotificationTitle(newNotification.getNotificationTitle());
 
         Notification updatedNotification = notificationRepository.save(notification);
+
         if(updatedNotification == null || newNotification== null)
             throw new ErrorExecutionFailedException("Notification update failed ");
+        try{
+            listener.update(updatedNotification);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Notification successfully updated ",updatedNotification));
 
     }
@@ -80,6 +102,11 @@ public class NotificationService {
         Notification notification = notificationRepository.findById(id).orElseThrow(() -> new ErrorNotFoundException("Cannot find notification with id "+id));
 
         notificationRepository.delete(notification);
+        try{
+            listener.delete(notification);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Delete successful notification with id "+id,notification));
     }
 }

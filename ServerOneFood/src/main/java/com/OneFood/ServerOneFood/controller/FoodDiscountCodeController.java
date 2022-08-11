@@ -14,7 +14,6 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("one-app/v1/food-discount-code")
-@PreAuthorize("isAuthenticated()")
 public class FoodDiscountCodeController {
     @Autowired
     private FoodDiscountCodeService foodDiscountCodeService;
@@ -24,8 +23,8 @@ public class FoodDiscountCodeController {
     }
 
     @GetMapping("")
-    ResponseEntity<ResponseObject> getAllStore(){
-        return foodDiscountCodeService.getAllDiscount();
+    ResponseEntity<ResponseObject> getAllStore(@RequestParam(value = "page", defaultValue = "0") int page){
+        return foodDiscountCodeService.getAllDiscount(page);
     }
 
     @GetMapping("/{id}")

@@ -89,7 +89,10 @@ public class CartService {
         Long idUser = myService.getPrincipal();
         if(idUser == null) throw new ErrorAccessDeniedException("Access is denied");
         Cart cart = cartRepository.findByIdUserAndIdFood(idUser,idFood);
+
         if(amount ==0 ){  // nếu vật phẩm có sl = 0 thì xóa khỏi giỏ hàng
+            if(cart==null)
+                throw new ErrorAccessDeniedException("Item not in cart");
             return deleteCartById(cart.getIdCart());
         }
         ResponseEntity response;

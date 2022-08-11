@@ -56,12 +56,12 @@ public class SetPriceOfFlashSaleSchedule {
         });
     }
    //
-   // @Scheduled(initialDelay = 10*1000, fixedDelay = 10*1000)
+    //@Scheduled(initialDelay = 10*1000, fixedDelay = 10*10000000)
     public void setPriceWhileDiscountEnd(){
         LOGGER.info("End set price flash sale");
         List<FlashSale> flashSales = flashSaleService.getAllFlashSaleNormal();
         flashSales.stream().forEach(flashSale -> {
-            if(!flashSale.isFlashSale()){ // kiem tra  flash sale thì mới set giá
+            if(flashSale.isFlashSale()){ // kiem tra  flash sale thì mới set giá
                 List<Food> foods = flashSale.getFoods();
                 foods.stream().forEach(food -> {
                     try {
@@ -78,10 +78,11 @@ public class SetPriceOfFlashSaleSchedule {
                 }
             }
         });
+        LOGGER.info("End set price flash sale finish");
     }
 
 
-    //@Scheduled(initialDelay = 5*1000, fixedDelay = 5*1000)
+   // @Scheduled(initialDelay = 5*1000, fixedDelay = 5*1000)
     public void sample(){
         //LOGGER.info("Hello");
         Date now = new Date();

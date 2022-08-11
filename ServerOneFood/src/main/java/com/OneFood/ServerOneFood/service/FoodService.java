@@ -33,6 +33,7 @@ public class FoodService {
     }
 
     public ResponseEntity<ResponseObject> getAllFood(boolean sorted, float star, int page) throws ErrorExecutionFailedException {
+        List<Food> m = foodRepository.findAll();
         List<FoodDTO> foods =  foodRepository.getAllFoodDTO();
         if(foods.isEmpty())
             return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty food list ", foods));

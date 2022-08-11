@@ -24,8 +24,8 @@ public class StoreController {
     }
 
     @GetMapping("")
-    ResponseEntity<ResponseObject> getAllStore(){
-        return storeService.getAllStore();
+    ResponseEntity<ResponseObject> getAllStore(@RequestParam(value = "page", defaultValue = "0") int page){
+        return storeService.getAllStore(page);
     }
 
     @GetMapping("/{id}")

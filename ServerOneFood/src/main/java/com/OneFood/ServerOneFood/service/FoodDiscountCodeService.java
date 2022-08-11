@@ -10,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FoodDiscountCodeService {
@@ -23,10 +25,19 @@ public class FoodDiscountCodeService {
     }
 
 
-    public ResponseEntity<ResponseObject> getAllDiscount(){
+    public ResponseEntity<ResponseObject> getAllDiscount(int page){
         List<FoodDiscountCode> foodDiscountCodes =  foodDiscountCodeRepository.findAll();
         if(foodDiscountCodes.isEmpty())
             return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty type of discount list ", foodDiscountCodes));
+
+        int PAGE_SIZE = 4;
+        int limitStart = (page-1)*PAGE_SIZE;
+        int limitEnd = (page)*PAGE_SIZE;
+        if(limitStart > foodDiscountCodes.size())
+            return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(false,"End list", new ArrayList<>()));
+        if(page>0 && limitStart != -1 && limitEnd !=-1 && limitStart<limitEnd)
+            foodDiscountCodes = foodDiscountCodes.stream().skip(limitStart).limit(limitEnd-limitStart).collect(Collectors.toList());
+
         return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Find all successful discounts  ", foodDiscountCodes));
 
     }

@@ -224,6 +224,8 @@ public class FoodDTO {
         this.foodDiscountCodes = foodDiscountCodes;
     }
 
+
+
     public String getFoodTag() {
         return foodTag;
     }
