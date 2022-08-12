@@ -25,6 +25,7 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.AccessDeniedException;
 
 @RestController
 @RequestMapping("one-app/v1/user")
@@ -105,6 +106,16 @@ public class UserController {
     @PostMapping("/confirm_email")
     public ResponseEntity<ResponseObject> ConfirmEmail(@RequestParam(value = "email",defaultValue = "") String email, @RequestParam(value = "otp",defaultValue = "") String otp) throws ErrorNotFoundException {
         return userService.confirmEmail(email,otp);
+    }
+
+    @PostMapping("/add_food_discount_code")
+    public ResponseEntity<ResponseObject> addDiscountCode(@RequestParam(value = "idDiscount",defaultValue = "-1") Long idDiscount) throws ErrorNotFoundException, ErrorExecutionFailedException, AccessDeniedException, ErrorAccessDeniedException {
+        return userService.saveFoodDiscountCodeByIdFoodAndIdDiscount(idDiscount);
+    }
+
+    @PostMapping("/set_food_discount_code_used")
+    public ResponseEntity<ResponseObject> setDiscountCodeUsed(@RequestParam(value = "idDiscount",defaultValue = "-1") Long idDiscount) throws ErrorNotFoundException, ErrorExecutionFailedException, AccessDeniedException, ErrorAccessDeniedException {
+        return userService.setFoodDiscountCodeByIdFoodAndIdDiscountUsed(idDiscount);
     }
 
 }

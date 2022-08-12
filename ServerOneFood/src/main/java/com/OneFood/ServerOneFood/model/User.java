@@ -3,14 +3,10 @@ package com.OneFood.ServerOneFood.model;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table
@@ -119,6 +115,51 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.MERGE, orphanRemoval = true)
+    private Set<UserDiscount> userDiscounts;
+
+    public Set<UserDiscount> getUserDiscounts() {
+        return userDiscounts;
+    }
+
+    public void setUserDiscounts(Set<UserDiscount> userDiscounts) {
+        this.userDiscounts = userDiscounts;
+    }
+
+    public void addDiscount(FoodDiscountCode foodDiscountCode){
+        UserDiscount userDiscount = new UserDiscount(this, foodDiscountCode);
+        userDiscounts.add(userDiscount);
+        foodDiscountCode.getUserDiscounts().add(userDiscount);
+    }
+
+    public void setDiscountUsed(FoodDiscountCode foodDiscountCode){
+        for (Iterator<UserDiscount> iterator = userDiscounts.iterator();
+             iterator.hasNext(); ) {
+            UserDiscount userDiscount = iterator.next();
+
+            if (userDiscount.getUser().getIdUser() == this.idUser && userDiscount.getFoodDiscountCode().getIdFoodDiscountCode() == foodDiscountCode.getIdFoodDiscountCode()) {
+                userDiscount.setUsed();
+                userDiscounts.add(userDiscount);
+                foodDiscountCode.getUserDiscounts().add(userDiscount);
+                return;
+            }
+        }
+    }
+
+    public void setDiscountNotUsed(FoodDiscountCode foodDiscountCode){
+        for (Iterator<UserDiscount> iterator = userDiscounts.iterator();
+             iterator.hasNext(); ) {
+            UserDiscount userDiscount = iterator.next();
+
+            if (userDiscount.getUser().getIdUser() == this.idUser && userDiscount.getFoodDiscountCode().getIdFoodDiscountCode() == foodDiscountCode.getIdFoodDiscountCode()) {
+                userDiscount.setNotUsed();
+                userDiscounts.add(userDiscount);
+                foodDiscountCode.getUserDiscounts().add(userDiscount);
+                return;
+            }
+        }
+    }
+
     public User() {
     }
 
@@ -147,6 +188,8 @@ public class User {
         roles.remove(role);
         role.getUsers().remove(this);
     }
+
+
 
 
     @JsonBackReference

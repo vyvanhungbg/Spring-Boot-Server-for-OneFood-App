@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "food_discount_code")
@@ -32,8 +33,23 @@ public class FoodDiscountCode {
     @ManyToMany(mappedBy = "foodDiscountCodes", fetch = FetchType.LAZY) //
     private List<Food> foods = new ArrayList<>();
 
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "foodDiscountCode", cascade = CascadeType.MERGE, orphanRemoval = true)
+    private Set<UserDiscount> userDiscounts;
+
+    public Set<UserDiscount> getUserDiscounts() {
+        return userDiscounts;
+    }
+
+    public void setUserDiscounts(Set<UserDiscount> userDiscounts) {
+        this.userDiscounts = userDiscounts;
+    }
+
     public FoodDiscountCode() {
     }
+
+
 
     public FoodDiscountCode( long idStore,  long idTypeOfDiscountCode, int foodDiscountCodeIsDestroy, int foodDiscountCodeStatus, String foodDiscountCodeDescribe, String foodDiscountCodeImage, String foodDiscountEndTime, String foodDiscountStartTime, String foodDiscountCodeByMoney, String foodDiscountCodeByPercent) {
         this.idStore = idStore;

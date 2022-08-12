@@ -91,13 +91,15 @@ public class NotificationSocketController implements NotificationService.INotifi
 
     @Override
     public void create(Notification notification) {
-        notificationSocket.getBroadcastOperations().sendEvent("send", "Socket notification create"+notification.getIdNotification());
+        SocketIOClient client = userRegister.getKeyByValue(notification.getIdUser()+"");
+        client.sendEvent("send", "Socket notification create"+notification.getIdNotification());
         System.out.println("Socket notification create");
     }
 
     @Override
     public void delete(Notification notification) {
+       /* SocketIOClient client = userRegister.getKeyByValue(notification.getIdUser()+"");
         notificationSocket.getBroadcastOperations().sendEvent("send", "Socket notification delete "+notification.getIdNotification());
-        System.out.println("Socket notification delete");
+*/        System.out.println("Socket notification delete");
     }
 }

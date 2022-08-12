@@ -5,11 +5,10 @@ import com.OneFood.ServerOneFood.exception.ErrorAccessDeniedException;
 import com.OneFood.ServerOneFood.exception.ErrorExecutionFailedException;
 import com.OneFood.ServerOneFood.exception.ErrorNotFoundException;
 import com.OneFood.ServerOneFood.model.*;
+import com.OneFood.ServerOneFood.reponsitory.FoodDiscountCodeRepository;
 import com.OneFood.ServerOneFood.reponsitory.RoleRepository;
 import com.OneFood.ServerOneFood.reponsitory.UserRepository;
-import net.bytebuddy.utility.RandomString;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,11 +41,14 @@ public class UserService implements UserDetailsService {
     private final MyService myService;
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    private final FoodDiscountCodeRepository foodDiscountCodeRepository;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, MyService myService) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, MyService myService, FoodDiscountCodeRepository foodDiscountCodeRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.myService = myService;
+        this.foodDiscountCodeRepository = foodDiscountCodeRepository;
     }
 
     public ResponseEntity<ResponseObject> getInfoUser() throws ErrorAccessDeniedException, ErrorNotFoundException {
@@ -296,5 +299,68 @@ public class UserService implements UserDetailsService {
             user.setConfirmEmail(true);
         }
         userRepository.save(user);
+    }
+
+
+    public ResponseEntity<ResponseObject> saveFoodDiscountCodeByIdFoodAndIdDiscount(Long idDiscount) throws ErrorNotFoundException, ErrorExecutionFailedException, AccessDeniedException, ErrorAccessDeniedException {
+        FoodDiscountCode foodDiscountCode = foodDiscountCodeRepository.findById(idDiscount).orElseThrow(() -> new ErrorNotFoundException("Không tìm thấy mã giảm giá này "+idDiscount));
+        if(myService.getPrincipal() == null)
+            throw new ErrorAccessDeniedException("Access denied !");
+        User user = userRepository.findById(myService.getPrincipal()).orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người thêm "+myService.getPrincipal()));
+
+        Set<UserDiscount> userDiscounts = user.getUserDiscounts();
+
+        if(!userDiscounts.stream().filter(userDiscount -> userDiscount.getFoodDiscountCode().getIdFoodDiscountCode()==idDiscount).findFirst().isEmpty())
+            throw new ErrorExecutionFailedException("Đã có mã giảm giá này  "+idDiscount);
+        try {
+            user.addDiscount(foodDiscountCode);
+            userRepository.save(user);
+        }catch (Exception e){
+            throw new ErrorExecutionFailedException(e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Thêm thành công mã giảm giá "+idDiscount, null));
+    }
+
+    // set mã giảm giá đã sử dụng
+    public ResponseEntity<ResponseObject> setFoodDiscountCodeByIdFoodAndIdDiscountUsed(Long idDiscount) throws ErrorNotFoundException, ErrorExecutionFailedException, AccessDeniedException, ErrorAccessDeniedException {
+
+        FoodDiscountCode foodDiscountCode = foodDiscountCodeRepository.findById(idDiscount).orElseThrow(() -> new ErrorNotFoundException("Không tìm thấy mã giảm giá này "+idDiscount));
+        if(myService.getPrincipal() == null)
+            throw new ErrorAccessDeniedException("Access denied !");
+        User user = userRepository.findById(myService.getPrincipal()).orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người thêm "+myService.getPrincipal()));
+
+        Set<UserDiscount> userDiscounts = user.getUserDiscounts();
+
+        if(userDiscounts.stream().filter(userDiscount -> userDiscount.getFoodDiscountCode().getIdFoodDiscountCode()==idDiscount).findFirst().isEmpty())
+            throw new ErrorExecutionFailedException("Chưa có mã giảm giá này "+idDiscount);
+        try {
+            user.setDiscountUsed(foodDiscountCode);
+            userRepository.save(user);
+        }catch (Exception e){
+            throw new ErrorExecutionFailedException(e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Mã giảm giá đã được sử dụng thành công "+idDiscount,null));
+    }
+
+
+    // rollback mã giảm giá đã sử dụng
+    public ResponseEntity<ResponseObject> setFoodDiscountCodeByIdFoodAndIdDiscountNotUsed(Long idDiscount) throws ErrorNotFoundException, ErrorExecutionFailedException, AccessDeniedException, ErrorAccessDeniedException {
+
+        FoodDiscountCode foodDiscountCode = foodDiscountCodeRepository.findById(idDiscount).orElseThrow(() -> new ErrorNotFoundException("Không tìm thấy mã giảm giá này "+idDiscount));
+        if(myService.getPrincipal() == null)
+            throw new ErrorAccessDeniedException("Access denied !");
+        User user = userRepository.findById(myService.getPrincipal()).orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người thêm "+myService.getPrincipal()));
+
+        Set<UserDiscount> userDiscounts = user.getUserDiscounts();
+
+        if(userDiscounts.stream().filter(userDiscount -> userDiscount.getFoodDiscountCode().getIdFoodDiscountCode()==idDiscount).findFirst().isEmpty())
+            throw new ErrorExecutionFailedException("Chưa có mã giảm giá này "+idDiscount);
+        try {
+            user.setDiscountNotUsed(foodDiscountCode);
+            userRepository.save(user);
+        }catch (Exception e){
+            throw new ErrorExecutionFailedException(e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Mã giảm giá đã được trả lại thành công "+idDiscount,null));
     }
 }
