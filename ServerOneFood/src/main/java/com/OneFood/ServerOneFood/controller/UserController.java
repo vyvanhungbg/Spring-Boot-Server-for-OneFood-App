@@ -118,4 +118,10 @@ public class UserController {
         return userService.setFoodDiscountCodeByIdFoodAndIdDiscountUsed(idDiscount);
     }
 
+
+    @GetMapping("/get_food_discount_code")
+    public ResponseEntity<ResponseObject> getAllFoodDiscountCodeOfUser() throws ErrorNotFoundException, ErrorExecutionFailedException, AccessDeniedException, ErrorAccessDeniedException {
+        return userService.getAllFoodDiscountCodeOfUser();
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.OneFood.ServerOneFood.controller;
 
+import com.OneFood.ServerOneFood.exception.ErrorAccessDeniedException;
 import com.OneFood.ServerOneFood.exception.ErrorExecutionFailedException;
 import com.OneFood.ServerOneFood.exception.ErrorNotFoundException;
 import com.OneFood.ServerOneFood.model.FoodDiscountCode;
@@ -23,7 +24,7 @@ public class FoodDiscountCodeController {
     }
 
     @GetMapping("")
-    ResponseEntity<ResponseObject> getAllStore(@RequestParam(value = "page", defaultValue = "0") int page){
+    ResponseEntity<ResponseObject> getAllStore(@RequestParam(value = "page", defaultValue = "0") int page) throws ErrorAccessDeniedException {
         return foodDiscountCodeService.getAllDiscount(page);
     }
 

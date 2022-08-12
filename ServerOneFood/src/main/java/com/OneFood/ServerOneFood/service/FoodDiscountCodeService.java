@@ -1,10 +1,14 @@
 package com.OneFood.ServerOneFood.service;
 
+import com.OneFood.ServerOneFood.exception.ErrorAccessDeniedException;
 import com.OneFood.ServerOneFood.exception.ErrorExecutionFailedException;
 import com.OneFood.ServerOneFood.exception.ErrorNotFoundException;
 import com.OneFood.ServerOneFood.model.FoodDiscountCode;
 import com.OneFood.ServerOneFood.model.ResponseObject;
+import com.OneFood.ServerOneFood.model.User;
+import com.OneFood.ServerOneFood.model.UserDiscount;
 import com.OneFood.ServerOneFood.reponsitory.FoodDiscountCodeRepository;
+import com.OneFood.ServerOneFood.reponsitory.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,17 +24,38 @@ public class FoodDiscountCodeService {
 
     @Autowired
     private final FoodDiscountCodeRepository foodDiscountCodeRepository;
+    @Autowired
+    private final MyService myService;
 
-    public FoodDiscountCodeService(FoodDiscountCodeRepository foodDiscountCodeRepository) {
+    @Autowired
+    private final UserRepository userRepository;
+
+    public FoodDiscountCodeService(FoodDiscountCodeRepository foodDiscountCodeRepository, MyService myService, UserRepository userRepository) {
         this.foodDiscountCodeRepository = foodDiscountCodeRepository;
+        this.myService = myService;
+        this.userRepository = userRepository;
     }
 
 
-    public ResponseEntity<ResponseObject> getAllDiscount(int page){
-        List<FoodDiscountCode> foodDiscountCodes =  foodDiscountCodeRepository.findAll();
+    public ResponseEntity<ResponseObject> getAllDiscount(int page) throws ErrorAccessDeniedException {
+        List<FoodDiscountCode> foodDiscountCodes =  foodDiscountCodeRepository.getAllFoodDiscountCode();
         if(foodDiscountCodes.isEmpty())
             return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty type of discount list ", foodDiscountCodes));
+        Long idUser = myService.getPrincipal();
+        if(idUser == null)
+            throw new ErrorAccessDeniedException("Access denied");
+        User user = userRepository.findById(idUser).orElseThrow(() -> new ErrorAccessDeniedException("Access denied"));
 
+        Set<UserDiscount> userDiscounts = user.getUserDiscounts();
+        List<FoodDiscountCode> foodDiscountCodesOfUser = new ArrayList<>(foodDiscountCodes);
+        userDiscounts.stream().forEach(userDiscount -> {
+            for(int i=0;i<foodDiscountCodesOfUser.size();i++){
+                if( foodDiscountCodesOfUser.get(i).getIdFoodDiscountCode() == userDiscount.getFoodDiscountCode().getIdFoodDiscountCode()){
+                    foodDiscountCodesOfUser.get(i).setSave(true);
+                }
+            }
+        });
+        foodDiscountCodes = foodDiscountCodesOfUser;
         int PAGE_SIZE = 4;
         int limitStart = (page-1)*PAGE_SIZE;
         int limitEnd = (page)*PAGE_SIZE;

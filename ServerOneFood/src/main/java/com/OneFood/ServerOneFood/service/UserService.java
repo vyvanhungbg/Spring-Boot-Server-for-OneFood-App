@@ -363,4 +363,23 @@ public class UserService implements UserDetailsService {
         }
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Mã giảm giá đã được trả lại thành công "+idDiscount,null));
     }
+
+
+    public ResponseEntity<ResponseObject> getAllFoodDiscountCodeOfUser() throws ErrorNotFoundException, ErrorExecutionFailedException, AccessDeniedException, ErrorAccessDeniedException {
+        if(myService.getPrincipal() == null)
+            throw new ErrorAccessDeniedException("Access denied !");
+        User user = userRepository.findById(myService.getPrincipal()).orElseThrow(() -> new ErrorAccessDeniedException("Access denied  "));
+
+        Set<UserDiscount> userDiscounts = user.getUserDiscounts();
+
+        List<FoodDiscountCode> foodDiscountCodes = foodDiscountCodeRepository.findAll();
+        List<FoodDiscountCode> foodDiscountCodesOfUser = new ArrayList<>();
+        userDiscounts.stream().forEach(userDiscount -> {
+            FoodDiscountCode mFoodDiscountCodes =  foodDiscountCodes.stream().filter(foodDiscountCode -> foodDiscountCode.getIdFoodDiscountCode()== userDiscount.getFoodDiscountCode().getIdFoodDiscountCode()).findFirst().orElse(null);
+            if(mFoodDiscountCodes != null)
+                foodDiscountCodesOfUser.add(mFoodDiscountCodes);
+        });
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Tìm thấy  "+foodDiscountCodesOfUser.size()+  " mã giảm giá", foodDiscountCodesOfUser));
+    }
+
 }

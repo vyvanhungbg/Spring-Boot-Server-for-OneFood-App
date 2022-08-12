@@ -1,5 +1,7 @@
 package com.OneFood.ServerOneFood.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -7,17 +9,21 @@ import javax.persistence.*;
 public class UserDiscount {
 
     @EmbeddedId
+    @Column(name = "idUserDiscount")
     private UserDiscountKey id = new UserDiscountKey();
 
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idUser")
     User user;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idFoodDiscountCode")
     FoodDiscountCode foodDiscountCode;
 
+    @Column(name = "isUsed")
     boolean isUsed;
 
     public UserDiscount() {

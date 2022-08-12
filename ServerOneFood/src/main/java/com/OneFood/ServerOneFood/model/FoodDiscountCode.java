@@ -28,6 +28,11 @@ public class FoodDiscountCode {
     private String foodDiscountStartTime;
     private String foodDiscountCodeByMoney;
     private String foodDiscountCodeByPercent;
+    @JsonIgnore
+    private boolean forAllUser = true; // mã này có phải cho mọi người hay không hay là mã cho 1 số ít người bằng nhập code
+    private boolean isSave = false;  // xem đã lưu mã này hay chưa
+    @JsonIgnore
+    private String code;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "foodDiscountCodes", fetch = FetchType.LAZY) //
@@ -47,6 +52,7 @@ public class FoodDiscountCode {
     }
 
     public FoodDiscountCode() {
+        this.forAllUser = true;
     }
 
 
@@ -62,6 +68,7 @@ public class FoodDiscountCode {
         this.foodDiscountStartTime = foodDiscountStartTime;
         this.foodDiscountCodeByMoney = foodDiscountCodeByMoney;
         this.foodDiscountCodeByPercent = foodDiscountCodeByPercent;
+        this.forAllUser = true;
     }
 
     public void addFood(Food food) {
@@ -98,7 +105,21 @@ public class FoodDiscountCode {
         this.idStore = idStore;
     }
 
+    public boolean isForAllUser() {
+        return forAllUser;
+    }
 
+    public void setForAllUser(boolean forAllUser) {
+        this.forAllUser = forAllUser;
+    }
+
+    public boolean isSave() {
+        return isSave;
+    }
+
+    public void setSave(boolean save) {
+        isSave = save;
+    }
 
     public long getIdTypeOfDiscountCode() {
         return idTypeOfDiscountCode;

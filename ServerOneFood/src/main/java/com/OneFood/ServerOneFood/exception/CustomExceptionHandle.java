@@ -35,7 +35,7 @@ public class CustomExceptionHandle {
     }
 
     @ExceptionHandler(ErrorExecutionFailedException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     public ResponseObject ErrorExecutionFailedException(ErrorExecutionFailedException exception) {
         return new ResponseObject(false,exception.getMessage(),null);
     }

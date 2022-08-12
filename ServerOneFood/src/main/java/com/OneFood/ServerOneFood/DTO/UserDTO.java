@@ -30,6 +30,7 @@ public class UserDTO {
 
     private List<Bill> bills;
     private Set<String> roles = new HashSet<>();
+    private Set<UserDiscount> userDiscounts = new HashSet<>();
 
     public UserDTO(User user) {
         this.idUser = user.getIdUser();
@@ -47,6 +48,7 @@ public class UserDTO {
         this.bills = user.getBills();
         this.roles = getRoles(user);
         this.confirmEmail = user.isConfirmEmail();
+        this.userDiscounts = user.getUserDiscounts();
     }
     public Set<String> getRoles(User user){
         List<String> strings = new ArrayList<>();
@@ -176,5 +178,11 @@ public class UserDTO {
         return roles;
     }
 
+    public Set<UserDiscount> getUserDiscounts() {
+        return userDiscounts;
+    }
 
+    public void setUserDiscounts(Set<UserDiscount> userDiscounts) {
+        this.userDiscounts = userDiscounts;
+    }
 }
