@@ -40,8 +40,10 @@ public class NotificationSocketController implements NotificationService.INotifi
         this.notificationSocket.addConnectListener(onConnectEvent);
         this.notificationSocket.addDisconnectListener(onDisconnectEvent);
         this.notificationSocket.addEventListener("send", String.class, onSendMess);
+        this.notificationSocket.addEventListener("update", Notification.class, onUpdateNotification);
+        this.notificationSocket.addEventListener("create", Notification.class, onCreateNotification);
         this.notificationSocket.addEventListener("register", String.class, onRegisterNotification);
-        this.notificationSocket.addEventListener("getAll", Object.class, onGetAllNotification);
+        /*this.notificationSocket.addEventListener("getAll", Object.class, onGetAllNotification);*/
         NotificationService.listener = this;
     }
 
@@ -56,17 +58,35 @@ public class NotificationSocketController implements NotificationService.INotifi
         }
     };
 
+
+    private DataListener<Notification> onUpdateNotification = new DataListener<Notification>() {
+        @Override
+        public void onData(SocketIOClient socketIOClient, Notification notification, AckRequest ackRequest) throws Exception {
+            socketIOClient.sendEvent("update", notification);
+            ackRequest.sendAckData("Notification update!");
+        }
+    };
+
+
+    private DataListener<Notification> onCreateNotification = new DataListener<Notification>() {
+        @Override
+        public void onData(SocketIOClient socketIOClient, Notification notification, AckRequest ackRequest) throws Exception {
+            socketIOClient.sendEvent("create", notification);
+            ackRequest.sendAckData("Notification create!");
+        }
+    };
+
     private DataListener<String> onRegisterNotification = new DataListener<String>() {
         @Override
         public void onData(SocketIOClient socketIOClient, String userID, AckRequest ackRequest) throws Exception {
             userRegister.put( socketIOClient,userID);
-            socketIOClient.sendEvent("register",socketIOClient, userID);
+            socketIOClient.sendEvent("register", userID);
             System.out.println("user register : " + userRegister.getValueByKey(socketIOClient));
             System.out.println("user client : " + userRegister.getKeyByValue(userID).getSessionId());
         }
     };
 
-    private DataListener<Object> onGetAllNotification = new DataListener<Object>() {
+    /*private DataListener<Object> onGetAllNotification = new DataListener<Object>() {
         @Override
         public void onData(SocketIOClient socketIOClient, Object o, AckRequest ackRequest) throws Exception {
             String idUser = userRegister.getValueByKey(socketIOClient);
@@ -75,13 +95,14 @@ public class NotificationSocketController implements NotificationService.INotifi
             ResponseEntity<ResponseObject> response = notificationService.getAllNotification(Long.parseLong(idUser));
             socketIOClient.sendEvent("getAll", socketIOClient, response);
         }
-    };
+    };*/
 
 
     private ConnectListener onConnectEvent = new ConnectListener() {
         @Override
         public void onConnect(SocketIOClient client) {
-            System.out.println("Connected to /notification namespace! " + client.getSessionId());
+            System.out.println("Connected to /notification namespace! client :  " + client.getSessionId());
+            System.out.println("notification namespace has  " + userRegister.size() +1+ " user connected");
         }
     };
 
@@ -89,7 +110,7 @@ public class NotificationSocketController implements NotificationService.INotifi
         @Override
         public void onDisconnect(SocketIOClient client) {
            // notificationSocket.getBroadcastOperations().sendEvent("leave");
-            System.out.println("Disconnected from /chat namespace! " + client.getSessionId());
+            System.out.println("Disconnected from /notification namespace! " + client.getSessionId());
             System.out.println("User unregister! " + userRegister.getValueByKey(client));
             userRegister.removeByKey(client);
         }
@@ -102,14 +123,16 @@ public class NotificationSocketController implements NotificationService.INotifi
         System.out.println("user ID has notification  "+notification.getIdUser());
         if(client == null)
             return;
-        client.sendEvent("send", notification);
+        client.sendEvent("update", notification);
         System.out.println("Socket notification update with user ID : "+notification.getIdUser());
     }
 
     @Override
     public void create(Notification notification) {
         SocketIOClient client = userRegister.getKeyByValue(notification.getIdUser()+"");
-        client.sendEvent("send", notification);
+        if(client == null)
+            return;
+        client.sendEvent("create", notification);
         System.out.println("Socket notification create");
     }
 

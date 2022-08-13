@@ -16,6 +16,9 @@ public class MapTwoWay<K, V>  {
     }
 
     public void put(K key, V value){
+        if(map.containsValue(value) && reverseMap.containsKey(value)){  // chứa user rồi thì xóa cặp đó
+            removeByValue(value);
+        }
         map.put(key, value);
         reverseMap.put(value, key);
     }
