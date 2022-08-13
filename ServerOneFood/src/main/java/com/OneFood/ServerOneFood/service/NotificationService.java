@@ -46,8 +46,19 @@ public class NotificationService {
             return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty notification list ", notifications));
         List<Notification> notificationFilter = new ArrayList<>(notifications);
         Long idUser = myService.getPrincipal();
-        if(!myService.isRoleAdmin())
+        //if(!myService.isRoleAdmin())
             notificationFilter = notifications.stream().filter(notification -> notification.getIdUser() == idUser).collect(Collectors.toList());
+        return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Find "+notificationFilter.size()+" notification ", notificationFilter));
+
+    }
+
+    public ResponseEntity<ResponseObject> getAllNotification(Long idUser){
+        List<Notification> notifications =  notificationRepository.findAll();
+        if(notifications.isEmpty())
+            return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Empty notification list ", notifications));
+        List<Notification> notificationFilter = new ArrayList<>(notifications);
+        //if(!myService.isRoleAdmin())
+        notificationFilter = notifications.stream().filter(notification -> notification.getIdUser() == idUser).collect(Collectors.toList());
         return  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(true,"Find "+notificationFilter.size()+" notification ", notificationFilter));
 
     }
